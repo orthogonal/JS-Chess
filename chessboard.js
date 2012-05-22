@@ -11,6 +11,16 @@ function Piece(color, type, obj, square){
 	square.piece = this;
 	
 	this.representation = obj;
+	
+	this.representation.addEventListener("click", function(e){
+		var x = e.pageX;
+		var y = e.pageY;
+		var column = (Math.floor(x / 50) + 1);
+		var row = 8 - (Math.floor(y / 50));
+		var sq = squares[(column - 1)][(row - 1)];
+		var pc = sq.piece;
+		alert(pc.color + " " + pc.type + ": " + pc.square.column + " " + pc.square.row);
+	}, false);
 }
 Piece.WHITE = 0;
 Piece.BLACK = 1;
@@ -30,6 +40,11 @@ function Square(column, row){
 	this.row = row;
 	
 	this.piece = null;
+	
+	this.coordinates = {
+			x : (8 - row) * 50,
+			y : (column - 1) * 50
+	};
 }
 
 
@@ -170,3 +185,153 @@ for (var i = 0; i < 32; i++){
 	document.body.appendChild(pieceImages[i]);
 }
 
+/*  Define all the squares */
+
+var a1 = new Square(1, 1);
+var a2 = new Square(1, 2);
+var a3 = new Square(1, 3);
+var a4 = new Square(1, 4);
+var a5 = new Square(1, 5);
+var a6 = new Square(1, 6);
+var a7 = new Square(1, 7);
+var a8 = new Square(1, 8);
+
+var b1 = new Square(2, 1);
+var b2 = new Square(2, 2);
+var b3 = new Square(2, 3);
+var b4 = new Square(2, 4);
+var b5 = new Square(2, 5);
+var b6 = new Square(2, 6);
+var b7 = new Square(2, 7);
+var b8 = new Square(2, 8);
+
+var c1 = new Square(3, 1);
+var c2 = new Square(3, 2);
+var c3 = new Square(3, 3);
+var c4 = new Square(3, 4);
+var c5 = new Square(3, 5);
+var c6 = new Square(3, 6);
+var c7 = new Square(3, 7);
+var c8 = new Square(3, 8);
+
+var d1 = new Square(4, 1);
+var d2 = new Square(4, 2);
+var d3 = new Square(4, 3);
+var d4 = new Square(4, 4);
+var d5 = new Square(4, 5);
+var d6 = new Square(4, 6);
+var d7 = new Square(4, 7);
+var d8 = new Square(4, 8);
+
+var e1 = new Square(5, 1);
+var e2 = new Square(5, 2);
+var e3 = new Square(5, 3);
+var e4 = new Square(5, 4);
+var e5 = new Square(5, 5);
+var e6 = new Square(5, 6);
+var e7 = new Square(5, 7);
+var e8 = new Square(5, 8);
+
+var f1 = new Square(6, 1);
+var f2 = new Square(6, 2);
+var f3 = new Square(6, 3);
+var f4 = new Square(6, 4);
+var f5 = new Square(6, 5);
+var f6 = new Square(6, 6);
+var f7 = new Square(6, 7);
+var f8 = new Square(6, 8);
+
+var g1 = new Square(7, 1);
+var g2 = new Square(7, 2);
+var g3 = new Square(7, 3);
+var g4 = new Square(7, 4);
+var g5 = new Square(7, 5);
+var g6 = new Square(7, 6);
+var g7 = new Square(7, 7);
+var g8 = new Square(7, 8);
+
+var h1 = new Square(8, 1);
+var h2 = new Square(8, 2);
+var h3 = new Square(8, 3);
+var h4 = new Square(8, 4);
+var h5 = new Square(8, 5);
+var h6 = new Square(8, 6);
+var h7 = new Square(8, 7);
+var h8 = new Square(8, 8);
+
+var squares = [
+		[a1, a2, a3, a4, a5, a6, a7, a8],
+		[b1, b2, b3, b4, b5, b6 ,b7, b8],
+		[c1, c2, c3, c4, c5, c6, c7, c8],
+		[d1, d2, d3, d4, d5, d6, d7, d8],
+		[e1, e2, e3, e4, e5, e6, e7, e8],
+		[f1, f2, f3, f4, f5, f6, f7, f8],
+		[g1, g2, g3, g4, g5, g6, g7, g8],
+		[h1, h2, h3, h4, h5, h6, h7, h8]
+];
+
+var wp1 = new Piece(Piece.WHITE, Piece.PAWN, img_wp1, a2);
+a2.piece = wp1;
+var wp2 = new Piece(Piece.WHITE, Piece.PAWN, img_wp2, b2);
+b2.piece = wp2;
+var wp3 = new Piece(Piece.WHITE, Piece.PAWN, img_wp3, c2);
+c2.piece = wp3;
+var wp4 = new Piece(Piece.WHITE, Piece.PAWN, img_wp4, d2);
+d2.piece = wp4;
+var wp5 = new Piece(Piece.WHITE, Piece.PAWN, img_wp5, e2);
+e2.piece = wp5;
+var wp6 = new Piece(Piece.WHITE, Piece.PAWN, img_wp6, f2);
+f2.piece = wp6;
+var wp7 = new Piece(Piece.WHITE, Piece.PAWN, img_wp7, g2);
+g2.piece = wp7;
+var wp8 = new Piece(Piece.WHITE, Piece.PAWN, img_wp8, h2);
+h2.piece = wp8;
+var wr1 = new Piece(Piece.WHITE, Piece.ROOK, img_wr1, a1);
+a1.piece = wr1;
+var wn1 = new Piece(Piece.WHITE, Piece.KNIGHT, img_wn1, b1);
+b1.piece = wn1;
+var wb1 = new Piece(Piece.WHITE, Piece.BISHOP, img_wb1, c1);
+c1.piece = wb1;
+var wq = new Piece(Piece.WHITE, Piece.QUEEN, img_wq, d1);
+d1.piece = wq;
+var wk = new Piece(Piece.WHITE, Piece.KING, img_wk, e1);
+e1.piece = wk;
+var wb2 = new Piece(Piece.WHITE, Piece.BISHOP, img_wb2, f1);
+f1.piece = wb2;
+var wn2 = new Piece(Piece.WHITE, Piece.KNIGHT, img_wn2, g1);
+g1.piece = wn2;
+var wr2 = new Piece(Piece.WHITE, Piece.ROOK, img_wr2, h1);
+h1.piece = wr2;
+
+var bp1 = new Piece(Piece.BLACK, Piece.PAWN, img_bp1, a7);
+a7.piece = bp1;
+var bp2 = new Piece(Piece.BLACK, Piece.PAWN, img_bp2, b7);
+b7.piece = bp2;
+var bp3 = new Piece(Piece.BLACK, Piece.PAWN, img_bp3, c7);
+c7.piece = bp3;
+var bp4 = new Piece(Piece.BLACK, Piece.PAWN, img_bp4, d7);
+d7.piece = bp4;
+var bp5 = new Piece(Piece.BLACK, Piece.PAWN, img_bp5, e7);
+e7.piece = bp5;
+var bp6 = new Piece(Piece.BLACK, Piece.PAWN, img_bp6, f7);
+f7.piece = bp6;
+var bp7 = new Piece(Piece.BLACK, Piece.PAWN, img_bp7, g7);
+g7.piece = bp7;
+var bp8 = new Piece(Piece.BLACK, Piece.PAWN, img_bp8, h7);
+h7.piece = bp8;
+var br1 = new Piece(Piece.BLACK, Piece.ROOK, img_br1, a8);
+a8.piece = br1;
+var bn1 = new Piece(Piece.BLACK, Piece.KNIGHT, img_bn1, b8);
+b8.piece = bn1;
+var bb1 = new Piece(Piece.BLACK, Piece.BISHOP, img_bb1, c8);
+c8.piece = bb1;
+var bq = new Piece(Piece.BLACK, Piece.QUEEN, img_bq, d8);
+d8.piece = bq;
+var bk = new Piece(Piece.BLACK, Piece.KING, img_bk, e8);
+e8.piece = bk;
+var bb2 = new Piece(Piece.BLACK, Piece.BISHOP, img_bb2, f8);
+f8.piece = bb2;
+var bn2 = new Piece(Piece.BLACK, Piece.KNIGHT, img_bn2, g8);
+g8.piece = bn2;
+var br2 = new Piece(Piece.BLACK, Piece.ROOK, img_br2, h8);
+h8.piece = br2;
