@@ -585,45 +585,50 @@ document.onmousedown = function(e){
 	var y = e.pageY;
 	var column = (Math.floor(x / 50) + 1);
 	var row = 8 - (Math.floor(y / 50));
-	var sq = squares[(column - 1)][(row - 1)];
-	var pc = sq.piece;
-	document.body.focus();
-	if (pc != null && ((turn == true && pc.color == Piece.WHITE) || (turn == false && pc.color == Piece.BLACK))){
-		pickedUp = true;
-		pickedUpPiece = pc;
-		document.onmouseup = function(e){	
-			var x = e.pageX;
-			var y = e.pageY;
-			var column = (Math.floor(x / 50) + 1);
-			var row = 8 - (Math.floor(y / 50));
-			if ((0 < row) && (row <= 8) && (0 < column) && (column <= 8)){
-				var sq = squares[(column - 1)][(row - 1)];
-				movePiece(sq);
-				pickedUp = false;
-				pickedUpPiece = null;
-			}
-			else{
-				movePiece(pickedUpPiece.square);
-				pickedUp = false;
-				pickedUpPiece = null;
-			}
-			document.onmouseup = function(){return false;};
-		};
-		document.onmousemove = function(e){
-			if (pickedUpPiece != null){
-				pickedUpPiece.representation.style.left = (e.pageX - 25) + "px";
-				pickedUpPiece.representation.style.top = (e.pageY - 25) + "px";
-			}
-		};
-		return false;
+	if (0 < column && column <= 8 && 0 < row && row <= 8){
+		var sq = squares[(column - 1)][(row - 1)];
+		var pc = sq.piece;
+		document.body.focus();
+		if (pc != null && ((turn == true && pc.color == Piece.WHITE) || (turn == false && pc.color == Piece.BLACK))){
+			pickedUp = true;
+			pickedUpPiece = pc;
+			document.onmouseup = function(e){	
+				var x = e.pageX;
+				var y = e.pageY;
+				var column = (Math.floor(x / 50) + 1);
+				var row = 8 - (Math.floor(y / 50));
+				if ((0 < row) && (row <= 8) && (0 < column) && (column <= 8)){
+					var sq = squares[(column - 1)][(row - 1)];
+					movePiece(sq);
+					pickedUp = false;
+					pickedUpPiece = null;
+				}
+				else{
+					movePiece(pickedUpPiece.square);
+					pickedUp = false;
+					pickedUpPiece = null;
+				}
+				document.onmouseup = function(){return false;};
+			};
+			document.onmousemove = function(e){
+				if (pickedUpPiece != null){
+					pickedUpPiece.representation.style.left = (e.pageX - 25) + "px";
+					pickedUpPiece.representation.style.top = (e.pageY - 25) + "px";
+				}
+			};
+			return false;
+		}
+		else
+			return false;
 	}
-	else
-		return false;
+	
 };
 
 /*  Code for what happens when a piece moves */
 
 var turn = true;		//true is white
+var check = false
+var checkmate = false;
 
 function movePiece(square){
 	oldPiece = square.piece;
@@ -644,9 +649,10 @@ function movePiece(square){
 				pickedUpPiece.representation.style.top = pickedUpPiece.square.coordinates.y + "px";
 			}
 			else
-				capture(pickedUpPiece, pickedUpPiece.square.piece);
+				capture(pickedUpPiece, pickedUpPiece.square.piece, oldSquare);
 		}
 		else{
+			var li = document.createElement("li");
 			pickedUpPiece.square.piece = pickedUpPiece;
 			pickedUpPiece.representation.style.left = pickedUpPiece.square.coordinates.x + "px";
 			pickedUpPiece.representation.style.top = pickedUpPiece.square.coordinates.y + "px";
@@ -660,6 +666,7 @@ function movePiece(square){
 						wr1.hasMoved = true;
 						wr1.representation.style.left = wr1.square.coordinates.x + "px";
 						wr1.representation.style.top = wr1.square.coordinates.y + "px";
+						li.innerHTML = "0-0-0";
 					}
 					else if (pickedUpPiece.color == Piece.BLACK){
 						br1.square.pickedUpPiece = null;
@@ -668,6 +675,7 @@ function movePiece(square){
 						br1.hasMoved = true;
 						br1.representation.style.left = br1.square.coordinates.x + "px";
 						br1.representation.style.top = br1.square.coordinates.y + "px";
+						li.innerHTML = "0-0-0";
 					}
 				}
 				if (pickedUpPiece.square.column == 7){			//Kingside Castle
@@ -678,6 +686,7 @@ function movePiece(square){
 						wr2.hasMoved = true;
 						wr2.representation.style.left = wr2.square.coordinates.x + "px";
 						wr2.representation.style.top = wr2.square.coordinates.y + "px";
+						li.innerHTML = "0-0";
 					}
 					else if (pickedUpPiece.color == Piece.BLACK){
 						br2.square.pickedUpPiece = null;
@@ -686,10 +695,40 @@ function movePiece(square){
 						br2.hasMoved = true;
 						br2.representation.style.left = br2.square.coordinates.x + "px";
 						br2.representation.style.top = br2.square.coordinates.y + "px";
+						li.innerHTML = "0-0";
 					}
 				}
 			}
+			else{
+				switch (pickedUpPiece.type){
+				case 0:
+					li.innerHTML = "";
+					break;
+				case 1:
+					li.innerHTML = "N";
+					break;
+				case 2:
+					li.innerHTML = "B";
+					break;
+				case 3:
+					li.innerHTML = "R";
+					break;
+				case 4:
+					li.innerHTML = "Q";
+					break;
+				case 5:
+					li.innerHTML = "K";
+					break;
+				}
+				li.innerHTML += String.fromCharCode(96 + pickedUpPiece.square.column);
+				li.innerHTML += pickedUpPiece.square.row;
+			}
 			pickedUpPiece.hasMoved = true;
+			if (checkmate)
+				li.innerHTML += "#";
+			else if (check)
+				li.innerHTML += "+";
+			(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
 		}
 	}
 	else{
@@ -700,7 +739,37 @@ function movePiece(square){
 	}
 }
 
-function capture(winner, loser){
+function capture(winner, loser, from){
+	var li = document.createElement("li");
+	switch (winner.type){
+	case 0:
+		li.innerHTML += String.fromCharCode(96 + from.column);
+		li.innerHTML += from.row;
+		break;
+	case 1:
+		li.innerHTML = "N";
+		break;
+	case 2:
+		li.innerHTML = "B";
+		break;
+	case 3:
+		li.innerHTML = "R";
+		break;
+	case 4:
+		li.innerHTML = "Q";
+		break;
+	case 5:
+		li.innerHTML = "K";
+		break;
+	}
+	li.innerHTML += "x";
+	li.innerHTML += String.fromCharCode(96 + loser.square.column);
+	li.innerHTML += loser.square.row;
+	if (checkmate)
+		li.innerHTML += "#";
+	else if (check)
+		li.innerHTML += "+";
+	(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
 	loser.square.piece = null;
 	loser.square = null;
 	document.body.removeChild(loser.representation);
@@ -757,36 +826,50 @@ function finalize(color){
 		node = node.next;
 	}
 	
+	check = false;
+	checkmate = false;
+	
 	/* Check all the squares available to all the enemy pieces.  If any of them matches the king's square, it's an illegal move. 
-	 * Also, if the player is trying to castle, check the blank square as well as the square he/she is trying to move the king to.*/
-	if (color == Piece.WHITE){		
-		var node = blackPieces.head;
-		while (node != null){
-			if ((node.contents.available[wk.square.column - 1][wk.square.row - 1] == 2 && node.contents.square.piece == node.contents)
-			 || ((wkavail == 3) && node.contents.available[5][0] == 2)
-			 || ((wkavail == 4) && node.contents.available[3][0] == 2)){
+	 * Also, if the player is trying to castle, check the blank square as well as the square he/she is trying to move the king to.*/	
+	var node = blackPieces.head;
+	while (node != null){
+		if ((node.contents.available[wk.square.column - 1][wk.square.row - 1] == 2 && node.contents.square.piece == node.contents)
+		 || ((wkavail == 3) && node.contents.available[5][0] == 2)
+		 || ((wkavail == 4) && node.contents.available[3][0] == 2)){
+			if (color == Piece.WHITE){
 				console.log("Illegal move:  Check");
 				return false;
 			}
-			node = node.next;
+			else{
+				console.log("Check");
+				check = true;
+				return true;
+			}					
 		}
-		return true;
+		node = node.next;
 	}
-	else if (color == Piece.BLACK){
-		var node = whitePieces.head;
-		while (node != null){
-			if ((node.contents.available[bk.square.column - 1][bk.square.row - 1] == 2 && node.contents.square.piece == node.contents)
-			 || ((bkavail == 3) && node.contents.available[5][7] == 2)
-			 || ((bkavail == 4) && node.contents.available[3][7] == 2)){
+		
+	var node = whitePieces.head;
+	while (node != null){
+		if ((node.contents.available[bk.square.column - 1][bk.square.row - 1] == 2 && node.contents.square.piece == node.contents)
+		 || ((bkavail == 3) && node.contents.available[5][7] == 2)
+		 || ((bkavail == 4) && node.contents.available[3][7] == 2)){
+			if (color == Piece.BLACK){
 				console.log("Illegal move:  Check");
 				return false;
 			}
-			node = node.next;
+			else{
+				console.log("Check");
+				check = true;
+				return true;
+			}
 		}
-		return true;
+		node = node.next;
 	}
+	
 	return true;
 }
+
 
 
 /* Draw the board in the browser */
@@ -813,6 +896,25 @@ board.style.position = "absolute";
 board.style.left = "0px";
 board.style.top = "0px";
 document.body.appendChild(board);
+
+var moves_container = document.createElement("div");
+moves_container.setAttribute("width", "150px");
+moves_container.style.position = "absolute";
+moves_container.style.left = "400px";
+moves_container.style.top = "0px";
+var whiteList = document.createElement("ol");
+whiteList.style.position = "absolute";
+whiteList.style.left = "0px";
+whiteList.setAttribute("width", "75px");
+var blackList = document.createElement("ul");
+blackList.style.listStyleType = "none";
+blackList.style.position = "absolute";
+blackList.style.left = "75px";
+blackList.setAttribute("width", "75px");
+
+moves_container.appendChild(whiteList);
+moves_container.appendChild(blackList);
+document.body.appendChild(moves_container);
 
 /*  Initialize all the image elements for the pieces, put the pieces in them, and set the board up properly */
 
