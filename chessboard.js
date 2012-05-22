@@ -51,7 +51,7 @@ document.onmousedown = function(e){
 	var sq = squares[(column - 1)][(row - 1)];
 	var pc = sq.piece;
 	document.body.focus();
-	if (pc != null){
+	if (pc != null && ((turn == true && pc.color == Piece.WHITE) || (turn == false && pc.color == Piece.BLACK))){
 		pickedUp = true;
 		pickedUpPiece = pc;
 		document.onmouseup = function(e){	
@@ -70,6 +70,7 @@ document.onmousedown = function(e){
 				pickedUp = false;
 				pickedUpPiece = null;
 			}
+			document.onmouseup = function(){return false;};
 		};
 		document.onmousemove = function(e){
 			if (pickedUpPiece != null){
@@ -79,9 +80,13 @@ document.onmousedown = function(e){
 		};
 		return false;
 	}
+	else
+		return false;
 };
 
 /*  Code for what happens when a piece moves */
+
+var turn = true;		//true is white
 
 function movePiece(square){
 	oldPiece = square.piece;
@@ -108,17 +113,19 @@ function movePiece(square){
 		pickedUpPiece.square.piece = pickedUpPiece;
 		pickedUpPiece.representation.style.left = pickedUpPiece.square.coordinates.x + "px";
 		pickedUpPiece.representation.style.top = pickedUpPiece.square.coordinates.y + "px";
+		turn = (turn) ? false : true;
 	}
 }
 
 function capture(winner, loser){
-	winner.hasMoved = true;
 	loser.square.piece = null;
 	loser.square = null;
 	document.body.removeChild(loser.representation);
 	winner.square.piece = winner;
 	winner.representation.style.left = winner.square.coordinates.x + "px";
 	winner.representation.style.top = winner.square.coordinates.y + "px";
+	winner.hasMoved = true;
+	turn = (turn) ? false : true;
 }
 
 
