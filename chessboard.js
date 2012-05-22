@@ -29,19 +29,19 @@ function Piece(color, type, obj, square){
 					var col = i + 1;
 					if (this.color == Piece.WHITE){
 						if (this.square.row == 2){									//Second rank:  One or two up
-							if (row == 3 || row == 4)
+							if (row == 3 || (row == 4 && squares[i][j - 1].piece == null))
 								if (this.square.column == col)
-									if (testSquare.piece == null)
+									if (testSquare.piece == null )
 										this.available[i][j] = Piece.MOVE_ONLY;
 									else
 										this.available[i][j] = Piece.NO_MOVE;
 								else
-									if (Math.abs(this.square.column- col) == 1		//Check second rank caps
+									if (Math.abs(this.square.column - col) == 1		//Check second rank caps
 									&& testSquare.piece != null) 
 										if (testSquare.piece.color != this.color)
 											this.available[i][j] = Piece.CAPTURE;
 										else
-											this.available[i][j] = Piece.NO_MOVE;
+											this.available[i][j] = Piece.FRIENDLY_PIECE;
 									else
 										this.available[i][j] = Piece.NO_MOVE;
 							else
@@ -60,7 +60,7 @@ function Piece(color, type, obj, square){
 										if (testSquare.piece.color != this.color)
 											this.available[i][j] = Piece.CAPTURE;
 										else
-											this.available[i][j] = Piece.NO_MOVE;
+											this.available[i][j] = Piece.FRIENDLY_PIECE;
 									else
 										this.available[i][j] = Piece.NO_MOVE;
 							else
@@ -69,7 +69,7 @@ function Piece(color, type, obj, square){
 					}
 					else{		//Black pawn
 						if (this.square.row == 7){									//Seventh rank:  One or two down
-							if (row == 6 || row == 5)
+							if (row == 6 || (row == 5 && squares[i][j + 1].piece == null))
 								if (this.square.column == col)
 									if (testSquare.piece == null)
 										this.available[i][j] = Piece.MOVE_ONLY;
@@ -81,7 +81,7 @@ function Piece(color, type, obj, square){
 										if (testSquare.piece.color != this.color)
 											this.available[i][j] = Piece.CAPTURE;
 										else
-											this.available[i][j] = Piece.NO_MOVE;
+											this.available[i][j] = Piece.FRIENDLY_PIECE;
 									else
 										this.available[i][j] = Piece.NO_MOVE;
 							else
@@ -100,7 +100,7 @@ function Piece(color, type, obj, square){
 										if (testSquare.piece.color != this.color)
 											this.available[i][j] = Piece.CAPTURE;
 										else
-											this.available[i][j] = Piece.NO_MOVE;
+											this.available[i][j] = Piece.FRIENDLY_PIECE;
 									else
 										this.available[i][j] = Piece.NO_MOVE;
 							else
@@ -120,7 +120,7 @@ function Piece(color, type, obj, square){
 							  && this.square.row != j
 							  && this.square.column != i)
 								if ((testSquare.piece != null) && (testSquare.piece.color == this.color))
-									this.available[i - 1][j - 1] = Piece.NO_MOVE;
+									this.available[i - 1][j - 1] = Piece.FRIENDLY_PIECE;
 								else
 									this.available[i - 1][j - 1] = Piece.CAPTURE;
 							else
@@ -141,8 +141,10 @@ function Piece(color, type, obj, square){
 				else{
 					if (testSquare.piece.color == this.color){
 						this.available[bi - 1][bj - 1] = Piece.NO_MOVE;
-						if (testSquare.piece != this)
+						if (testSquare.piece != this){
+							this.available[bi - 1][bj - 1] = Piece.FRIENDLY_PIECE;
 							break outerloop;
+						}	
 					}
 					else{
 						this.available[bi - 1][bj - 1] = Piece.CAPTURE;
@@ -163,8 +165,10 @@ function Piece(color, type, obj, square){
 				else{
 					if (testSquare.piece.color == this.color){
 						this.available[bi - 1][bj - 1] = Piece.NO_MOVE;
-						if (testSquare.piece != this)
+						if (testSquare.piece != this){
+							this.available[bi - 1][bj - 1] = Piece.FRIENDLY_PIECE;
 							break outerloop;
+						}
 					}
 					else{
 						this.available[bi - 1][bj - 1] = Piece.CAPTURE;
@@ -185,8 +189,10 @@ function Piece(color, type, obj, square){
 				else{
 					if (testSquare.piece.color == this.color){
 						this.available[bi - 1][bj - 1] = Piece.NO_MOVE;
-						if (testSquare.piece != this)
+						if (testSquare.piece != this){
+							this.available[bi - 1][bj - 1] = Piece.FRIENDLY_PIECE;
 							break outerloop;
+						}
 					}
 					else{
 						this.available[bi - 1][bj - 1] = Piece.CAPTURE;
@@ -207,8 +213,10 @@ function Piece(color, type, obj, square){
 				else{
 					if (testSquare.piece.color == this.color){
 						this.available[bi - 1][bj - 1] = Piece.NO_MOVE;
-						if (testSquare.piece != this)
+						if (testSquare.piece != this){
+							this.available[bi - 1][bj - 1] = Piece.FRIENDLY_PIECE;
 							break outerloop;
+						}
 					}
 					else{
 						this.available[bi - 1][bj - 1] = Piece.CAPTURE;
@@ -231,8 +239,10 @@ function Piece(color, type, obj, square){
 				else{
 					if (testSquare.piece.color == this.color){
 						this.available[ri - 1][rj - 1] = Piece.NO_MOVE;
-						if (testSquare.piece != this)
+						if (testSquare.piece != this){
+							this.available[ri - 1][rj - 1] = Piece.FRIENDLY_PIECE;
 							break outerloop;
+						}
 					}
 					else{
 						this.available[ri - 1][rj - 1] = Piece.CAPTURE;
@@ -251,8 +261,10 @@ function Piece(color, type, obj, square){
 				else{
 					if (testSquare.piece.color == this.color){
 						this.available[ri - 1][rj - 1] = Piece.NO_MOVE;
-						if (testSquare.piece != this)
+						if (testSquare.piece != this){
+							this.available[ri - 1][rj - 1] = Piece.FRIENDLY_PIECE;
 							break outerloop;
+						}
 					}
 					else{
 						this.available[ri - 1][rj - 1] = Piece.CAPTURE;
@@ -272,8 +284,10 @@ function Piece(color, type, obj, square){
 				else{
 					if (testSquare.piece.color == this.color){
 						this.available[ri - 1][rj - 1] = Piece.NO_MOVE;
-						if (testSquare.piece != this)
+						if (testSquare.piece != this){
+							this.available[ri - 1][rj - 1] = Piece.FRIENDLY_PIECE;
 							break outerloop;
+						}
 					}
 					else{
 						this.available[ri - 1][rj - 1] = Piece.CAPTURE;
@@ -292,8 +306,10 @@ function Piece(color, type, obj, square){
 				else{
 					if (testSquare.piece.color == this.color){
 						this.available[ri - 1][rj - 1] = Piece.NO_MOVE;
-						if (testSquare.piece != this)
+						if (testSquare.piece != this){
+							this.available[ri - 1][rj - 1] = Piece.FRIENDLY_PIECE;
 							break outerloop;
+						}
 					}
 					else{
 						this.available[ri - 1][rj - 1] = Piece.CAPTURE;
@@ -316,8 +332,10 @@ function Piece(color, type, obj, square){
 				else{
 					if (testSquare.piece.color == this.color){
 						this.available[qi - 1][qj - 1] = Piece.NO_MOVE;
-						if (testSquare.piece != this)
+						if (testSquare.piece != this){
+							this.available[qi - 1][qj - 1] = Piece.FRIENDLY_PIECE;
 							break outerloop;
+						}
 					}
 					else{
 						this.available[qi - 1][qj - 1] = Piece.CAPTURE;
@@ -338,8 +356,10 @@ function Piece(color, type, obj, square){
 				else{
 					if (testSquare.piece.color == this.color){
 						this.available[qi - 1][qj - 1] = Piece.NO_MOVE;
-						if (testSquare.piece != this)
+						if (testSquare.piece != this){
+							this.available[qi - 1][qj - 1] = Piece.FRIENDLY_PIECE;
 							break outerloop;
+						}
 					}
 					else{
 						this.available[qi - 1][qj - 1] = Piece.CAPTURE;
@@ -360,8 +380,10 @@ function Piece(color, type, obj, square){
 				else{
 					if (testSquare.piece.color == this.color){
 						this.available[qi - 1][qj - 1] = Piece.NO_MOVE;
-						if (testSquare.piece != this)
+						if (testSquare.piece != this){
+							this.available[qi - 1][qj - 1] = Piece.FRIENDLY_PIECE;
 							break outerloop;
+						}
 					}
 					else{
 						this.available[qi - 1][qj - 1] = Piece.CAPTURE;
@@ -382,8 +404,10 @@ function Piece(color, type, obj, square){
 				else{
 					if (testSquare.piece.color == this.color){
 						this.available[qi - 1][qj - 1] = Piece.NO_MOVE;
-						if (testSquare.piece != this)
+						if (testSquare.piece != this){
+							this.available[qi - 1][qj - 1] = Piece.FRIENDLY_PIECE;
 							break outerloop;
+						}
 					}
 					else{
 						this.available[qi - 1][qj - 1] = Piece.CAPTURE;
@@ -404,8 +428,10 @@ function Piece(color, type, obj, square){
 				else{
 					if (testSquare.piece.color == this.color){
 						this.available[qi - 1][qj - 1] = Piece.NO_MOVE;
-						if (testSquare.piece != this)
+						if (testSquare.piece != this){
+							this.available[qi - 1][qj - 1] = Piece.FRIENDLY_PIECE;
 							break outerloop;
+						}
 					}
 					else{
 						this.available[qi - 1][qj - 1] = Piece.CAPTURE;
@@ -424,8 +450,10 @@ function Piece(color, type, obj, square){
 				else{
 					if (testSquare.piece.color == this.color){
 						this.available[qi - 1][qj - 1] = Piece.NO_MOVE;
-						if (testSquare.piece != this)
+						if (testSquare.piece != this){
+							this.available[qi - 1][qj - 1] = Piece.FRIENDLY_PIECE;
 							break outerloop;
+						}
 					}
 					else{
 						this.available[qi - 1][qj - 1] = Piece.CAPTURE;
@@ -445,8 +473,10 @@ function Piece(color, type, obj, square){
 				else{
 					if (testSquare.piece.color == this.color){
 						this.available[qi - 1][qj - 1] = Piece.NO_MOVE;
-						if (testSquare.piece != this)
+						if (testSquare.piece != this){
+							this.available[qi - 1][qj - 1] = Piece.FRIENDLY_PIECE;
 							break outerloop;
+						}
 					}
 					else{
 						this.available[qi - 1][qj - 1] = Piece.CAPTURE;
@@ -465,8 +495,10 @@ function Piece(color, type, obj, square){
 				else{
 					if (testSquare.piece.color == this.color){
 						this.available[qi - 1][qj - 1] = Piece.NO_MOVE;
-						if (testSquare.piece != this)
+						if (testSquare.piece != this){
+							this.available[qi - 1][qj - 1] = Piece.FRIENDLY_PIECE;
 							break outerloop;
+						}
 					}
 					else{
 						this.available[qi - 1][qj - 1] = Piece.CAPTURE;
@@ -488,7 +520,7 @@ function Piece(color, type, obj, square){
 								|| squares[col - 1][row - 1].piece.color != this.color)
 							this.available[col - 1][row - 1] = Piece.CAPTURE;
 						else
-							this.available[col - 1][row - 1] = Piece.NO_MOVE;
+							this.available[col - 1][row - 1] = Piece.FRIENDLY_PIECE;
 					}
 				}
 			}
@@ -521,6 +553,7 @@ Piece.ROOK = 3;
 Piece.QUEEN = 4;
 Piece.KING = 5;
 
+Piece.FRIENDLY_PIECE = -1;
 Piece.NO_MOVE = 0;
 Piece.MOVE_ONLY = 1;
 Piece.CAPTURE = 2;
@@ -627,14 +660,14 @@ document.onmousedown = function(e){
 /*  Code for what happens when a piece moves */
 
 var turn = true;		//true is white
-var check = false
+var check = false;
 var checkmate = false;
 
 function movePiece(square){
 	oldPiece = square.piece;
 	oldSquare = pickedUpPiece.square;
 	
-	if (checkValidMove(pickedUpPiece, square) == true){
+	if (checkValidMove(pickedUpPiece, square, true) == true){
 		pickedUpPiece.square = oldSquare;
 		square.piece = oldPiece;
 		
@@ -724,11 +757,18 @@ function movePiece(square){
 				li.innerHTML += pickedUpPiece.square.row;
 			}
 			pickedUpPiece.hasMoved = true;
+			var tempCheck = (check ? true : false);
+			if (check)
+				tryCheckmate(Math.abs(pickedUpPiece.color - 1));
+			check = tempCheck;
 			if (checkmate)
 				li.innerHTML += "#";
 			else if (check)
 				li.innerHTML += "+";
+			listValidMoves(Piece.WHITE);
+			listValidMoves(Piece.BLACK);
 			(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
+			printTestTable(bk);
 		}
 	}
 	else{
@@ -765,11 +805,6 @@ function capture(winner, loser, from){
 	li.innerHTML += "x";
 	li.innerHTML += String.fromCharCode(96 + loser.square.column);
 	li.innerHTML += loser.square.row;
-	if (checkmate)
-		li.innerHTML += "#";
-	else if (check)
-		li.innerHTML += "+";
-	(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
 	loser.square.piece = null;
 	loser.square = null;
 	document.body.removeChild(loser.representation);
@@ -782,12 +817,24 @@ function capture(winner, loser, from){
 	winner.representation.style.top = winner.square.coordinates.y + "px";
 	winner.hasMoved = true;
 	turn = (turn) ? false : true;
+	listValidMoves(Piece.WHITE);
+	listValidMoves(Piece.BLACK);
+	var tempCheck = (check ? true : false);
+	if (check)
+		tryCheckmate(Math.abs(winner.color - 1));
+	check = tempCheck;
+	if (checkmate)
+		li.innerHTML += "#";
+	else if (check)
+		li.innerHTML += "+";
+	(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
+	printTestTable(bk);
 }
 
-function checkValidMove(piece, square){
+function checkValidMove(piece, square, tryCheck){
 	piece.updateMoves();
 	
-	if (piece.available[square.column - 1][square.row - 1] != 0){
+	if (piece.available[square.column - 1][square.row - 1] > 0){
 		var oldSquare = piece.square;
 		var oldPiece = square.piece;
 		
@@ -795,13 +842,13 @@ function checkValidMove(piece, square){
 		square.piece = piece;
 		oldSquare.piece = null;
 		
-		if (finalize(piece.color))
+		if (finalize(piece.color, tryCheck))
 			return true;
 		else{
 			piece.square.piece = oldPiece;
 			piece.square = oldSquare;
 			oldSquare.piece = piece;
-			finalize(100);
+			finalize(piece.color, false);
 			return false;
 		}
 	}
@@ -809,7 +856,7 @@ function checkValidMove(piece, square){
 		return false;
 }
 
-function finalize(color){
+function finalize(color, tryCheck){
 	
 	wkavail = wk.available[wk.square.column - 1][wk.square.row - 1];
 	bkavail = bk.available[bk.square.column - 1][bk.square.row - 1];
@@ -826,24 +873,27 @@ function finalize(color){
 		node = node.next;
 	}
 	
-	check = false;
-	checkmate = false;
+	if (tryCheck){
+		check = false;
+		checkmate = false;
+	}
+	
 	
 	/* Check all the squares available to all the enemy pieces.  If any of them matches the king's square, it's an illegal move. 
 	 * Also, if the player is trying to castle, check the blank square as well as the square he/she is trying to move the king to.*/	
 	var node = blackPieces.head;
 	while (node != null){
-		if ((node.contents.available[wk.square.column - 1][wk.square.row - 1] == 2 && node.contents.square.piece == node.contents)
+		if (((node.contents.available[wk.square.column - 1][wk.square.row - 1] == 2 || node.contents.available[wk.square.column - 1][wk.square.row - 1] == -1) && node.contents.square.piece == node.contents)
 		 || ((wkavail == 3) && node.contents.available[5][0] == 2)
 		 || ((wkavail == 4) && node.contents.available[3][0] == 2)){
 			if (color == Piece.WHITE){
-				console.log("Illegal move:  Check");
+				if (tryCheck)
+					console.log("Illegal move:  Check");
 				return false;
 			}
-			else{
-				console.log("Check");
+			else if (tryCheck){
+				console.log("White is in check from the piece on " + String.fromCharCode(96 + node.contents.square.column) + node.contents.square.row);
 				check = true;
-				return true;
 			}					
 		}
 		node = node.next;
@@ -851,17 +901,17 @@ function finalize(color){
 		
 	var node = whitePieces.head;
 	while (node != null){
-		if ((node.contents.available[bk.square.column - 1][bk.square.row - 1] == 2 && node.contents.square.piece == node.contents)
+		if (((node.contents.available[bk.square.column - 1][bk.square.row - 1] == 2 || node.contents.available[bk.square.column - 1][bk.square.row - 1] == -1) && node.contents.square.piece == node.contents)
 		 || ((bkavail == 3) && node.contents.available[5][7] == 2)
 		 || ((bkavail == 4) && node.contents.available[3][7] == 2)){
 			if (color == Piece.BLACK){
-				console.log("Illegal move:  Check");
+				if (tryCheck)
+					console.log("Illegal move:  Check");
 				return false;
 			}
-			else{
-				console.log("Check");
+			else if (tryCheck){
+				console.log("Black is in check from the piece on " + String.fromCharCode(96 + node.contents.square.column) + node.contents.square.row);
 				check = true;
-				return true;
 			}
 		}
 		node = node.next;
@@ -870,6 +920,27 @@ function finalize(color){
 	return true;
 }
 
+function tryCheckmate(color){
+	checkmate = false;
+	if (color == Piece.WHITE){
+		listValidMoves(Piece.WHITE);
+		if (whiteMoves.head.contents == null){
+			checkmate = true;
+		}
+	}
+	else{
+		listValidMoves(Piece.BLACK);
+		if (blackMoves.head.contents == null){
+			checkmate = true;
+		}
+	}
+}
+
+function printTestTable(piece){
+	for (var i = 7; i >= 0; i--){
+		console.log(piece.available[0][i] + " " + piece.available[1][i] + " " + piece.available[2][i] + " " + piece.available[3][i] + " " + piece.available[4][i] + " " + piece.available[5][i] + " " + piece.available[6][i] + " " + piece.available[7][i]);
+	}
+}
 
 
 /* Draw the board in the browser */
@@ -1212,3 +1283,62 @@ blackPieces.add(bb1);
 blackPieces.add(bb2);
 blackPieces.add(bq);
 blackPieces.add(bk);
+
+var whiteMoves = new LinkedList(null);
+var blackMoves = new LinkedList(null);
+
+listValidMoves(Piece.WHITE);
+listValidMoves(Piece.BLACK);
+
+function listValidMoves(color){
+	if (color == Piece.WHITE){
+		window.whiteMoves = new LinkedList(null);
+		pieceNode = whitePieces.head;
+		while (pieceNode != null){
+			for (var i = 0; i < 8; i++){
+				for (var j = 0; j < 8; j++){
+					oldPiece = squares[i][j].piece;
+					oldSquare = pieceNode.contents.square;
+					if (checkValidMove(pieceNode.contents, squares[i][j], false)){
+						if (window.whiteMoves.head.contents == null){
+							window.whiteMoves.head = new LLNode(null, {piece: pieceNode.contents, square: squares[i][j]}, null);
+							window.whiteMoves.tail = window.whiteMoves.head;
+							window.whiteMoves.length = 1;
+						}
+						else
+							window.whiteMoves.add({piece: pieceNode.contents, square: squares[i][j]});
+					}
+					squares[i][j].piece = oldPiece;
+					pieceNode.contents.square = oldSquare;
+					pieceNode.contents.square.piece = pieceNode.contents;
+				}
+			}
+			pieceNode = pieceNode.next;
+		}
+	}
+	else if (color == Piece.BLACK){
+		window.blackMoves = new LinkedList(null);
+		pieceNode = blackPieces.head;
+		while (pieceNode != null){
+			for (var i = 0; i < 8; i++){
+				for (var j = 0; j < 8; j++){
+					oldPiece = squares[i][j].piece;
+					oldSquare = pieceNode.contents.square;
+					if (checkValidMove(pieceNode.contents, squares[i][j], false)){
+						if (window.blackMoves.head.contents == null){
+							window.blackMoves.head = new LLNode(null, {piece: pieceNode.contents, square: squares[i][j]}, null);
+							window.blackMoves.tail = window.blackMoves.head;
+							window.blackMoves.length = 1;
+						}
+						else
+							window.blackMoves.add({piece: pieceNode.contents, square: squares[i][j]});
+					}
+					squares[i][j].piece = oldPiece;
+					pieceNode.contents.square = oldSquare;
+					pieceNode.contents.square.piece = pieceNode.contents;
+				}
+			}
+			pieceNode = pieceNode.next;
+		}
+	}
+}
