@@ -1,3 +1,66 @@
+var pickedUp = false;
+var pickedUpPiece = null;
+
+document.onmousedown = function(e){
+	var x = e.pageX;
+	var y = e.pageY;
+	var column = (Math.floor(x / 50) + 1);
+	var row = 8 - (Math.floor(y / 50));
+	var sq = squares[(column - 1)][(row - 1)];
+	var pc = sq.piece;
+	console.log("dragging" + pc.type);
+	document.body.focus();
+	if (pc != null){
+		pickedUp = true;
+		pickedUpPiece = pc;
+		console.log(pc.type);
+		document.onmouseup = function(e){	
+			var x = e.pageX;
+			var y = e.pageY;
+			var column = (Math.floor(x / 50) + 1);
+			var row = 8 - (Math.floor(y / 50));
+			if ((0 < row) && (row <= 8) && (0 < column) && (column <= 8)){
+				var sq = squares[(column - 1)][(row - 1)];
+				console.log("dragged" + pickedUpPiece.type + pickedUpPiece.type + " " + sq.coordinates.x);
+				pickedUpPiece.representation.style.left = sq.coordinates.x + "px";
+				pickedUpPiece.representation.style.top = sq.coordinates.y + "px";
+				sq.piece = pickedUpPiece;
+				pickedUpPiece.square.piece = null;
+				pickedUpPiece.square = sq;
+				pickedUp = false;
+				pickedUpPiece = null;
+			}
+		};
+		document.onmousemove = function(e){
+			if (pickedUpPiece != null){
+				pickedUpPiece.representation.style.left = (e.pageX - 25) + "px";
+				pickedUpPiece.representation.style.top = (e.pageY - 25) + "px";
+			}
+		};
+		return false;
+	}
+};
+
+/*document.body.addEventListener("mouseup", function(e){
+	console.log("mouseup");
+	var x = e.pageX;
+	var y = e.pageY;
+	var column = (Math.floor(x / 50) + 1);
+	var row = 8 - (Math.floor(y / 50));
+	if (pickedUp){
+		if ((0 < row) && (row <= 8) && (0 < column) && (column <= 8)){
+			var sq = squares[(column - 1)][(row - 1)];
+			console.log("Moved " + pickedUpPiece.type + " to " + sq.coordinates);
+			pickedUpPiece.representation.style.left = sq.coordinates.x;
+			pickedUpPiece.representation.style.top = sq.coordinates.y;
+			pickedUp = false;
+			pickedUpPiece = null;
+		}
+		else console.log(column + " " + row);
+	}
+	else console.log("No piece was grabbed");
+}, false);*/
+
 /*  Piece class declaration */
 
 function Piece(color, type, obj, square){
@@ -11,16 +74,6 @@ function Piece(color, type, obj, square){
 	square.piece = this;
 	
 	this.representation = obj;
-	
-	this.representation.addEventListener("click", function(e){
-		var x = e.pageX;
-		var y = e.pageY;
-		var column = (Math.floor(x / 50) + 1);
-		var row = 8 - (Math.floor(y / 50));
-		var sq = squares[(column - 1)][(row - 1)];
-		var pc = sq.piece;
-		alert(pc.color + " " + pc.type + ": " + pc.square.column + " " + pc.square.row);
-	}, false);
 }
 Piece.WHITE = 0;
 Piece.BLACK = 1;
@@ -42,8 +95,8 @@ function Square(column, row){
 	this.piece = null;
 	
 	this.coordinates = {
-			x : (8 - row) * 50,
-			y : (column - 1) * 50
+			x : (column - 1) * 50,
+			y : (8 - row) * 50
 	};
 }
 
