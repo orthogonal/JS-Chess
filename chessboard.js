@@ -1,66 +1,3 @@
-var pickedUp = false;
-var pickedUpPiece = null;
-
-document.onmousedown = function(e){
-	var x = e.pageX;
-	var y = e.pageY;
-	var column = (Math.floor(x / 50) + 1);
-	var row = 8 - (Math.floor(y / 50));
-	var sq = squares[(column - 1)][(row - 1)];
-	var pc = sq.piece;
-	console.log("dragging" + pc.type);
-	document.body.focus();
-	if (pc != null){
-		pickedUp = true;
-		pickedUpPiece = pc;
-		console.log(pc.type);
-		document.onmouseup = function(e){	
-			var x = e.pageX;
-			var y = e.pageY;
-			var column = (Math.floor(x / 50) + 1);
-			var row = 8 - (Math.floor(y / 50));
-			if ((0 < row) && (row <= 8) && (0 < column) && (column <= 8)){
-				var sq = squares[(column - 1)][(row - 1)];
-				console.log("dragged" + pickedUpPiece.type + pickedUpPiece.type + " " + sq.coordinates.x);
-				pickedUpPiece.representation.style.left = sq.coordinates.x + "px";
-				pickedUpPiece.representation.style.top = sq.coordinates.y + "px";
-				sq.piece = pickedUpPiece;
-				pickedUpPiece.square.piece = null;
-				pickedUpPiece.square = sq;
-				pickedUp = false;
-				pickedUpPiece = null;
-			}
-		};
-		document.onmousemove = function(e){
-			if (pickedUpPiece != null){
-				pickedUpPiece.representation.style.left = (e.pageX - 25) + "px";
-				pickedUpPiece.representation.style.top = (e.pageY - 25) + "px";
-			}
-		};
-		return false;
-	}
-};
-
-/*document.body.addEventListener("mouseup", function(e){
-	console.log("mouseup");
-	var x = e.pageX;
-	var y = e.pageY;
-	var column = (Math.floor(x / 50) + 1);
-	var row = 8 - (Math.floor(y / 50));
-	if (pickedUp){
-		if ((0 < row) && (row <= 8) && (0 < column) && (column <= 8)){
-			var sq = squares[(column - 1)][(row - 1)];
-			console.log("Moved " + pickedUpPiece.type + " to " + sq.coordinates);
-			pickedUpPiece.representation.style.left = sq.coordinates.x;
-			pickedUpPiece.representation.style.top = sq.coordinates.y;
-			pickedUp = false;
-			pickedUpPiece = null;
-		}
-		else console.log(column + " " + row);
-	}
-	else console.log("No piece was grabbed");
-}, false);*/
-
 /*  Piece class declaration */
 
 function Piece(color, type, obj, square){
@@ -100,6 +37,89 @@ function Square(column, row){
 	};
 }
 
+
+/*  Code for drag-and-dropping pieces around */
+
+var pickedUp = false;
+var pickedUpPiece = null;
+
+document.onmousedown = function(e){
+	var x = e.pageX;
+	var y = e.pageY;
+	var column = (Math.floor(x / 50) + 1);
+	var row = 8 - (Math.floor(y / 50));
+	var sq = squares[(column - 1)][(row - 1)];
+	var pc = sq.piece;
+	document.body.focus();
+	if (pc != null){
+		pickedUp = true;
+		pickedUpPiece = pc;
+		document.onmouseup = function(e){	
+			var x = e.pageX;
+			var y = e.pageY;
+			var column = (Math.floor(x / 50) + 1);
+			var row = 8 - (Math.floor(y / 50));
+			if ((0 < row) && (row <= 8) && (0 < column) && (column <= 8)){
+				var sq = squares[(column - 1)][(row - 1)];
+				movePiece(sq);
+				pickedUp = false;
+				pickedUpPiece = null;
+			}
+			else{
+				movePiece(pickedUpPiece.square);
+				pickedUp = false;
+				pickedUpPiece = null;
+			}
+		};
+		document.onmousemove = function(e){
+			if (pickedUpPiece != null){
+				pickedUpPiece.representation.style.left = (e.pageX - 25) + "px";
+				pickedUpPiece.representation.style.top = (e.pageY - 25) + "px";
+			}
+		};
+		return false;
+	}
+};
+
+/*  Code for what happens when a piece moves */
+
+function movePiece(square){
+	oldPiece = square.piece;
+	oldSquare = pickedUpPiece.square;
+	
+	pickedUpPiece.square = oldSquare;
+	square.piece = oldPiece;
+	
+	pickedUpPiece.square.piece = null;
+	pickedUpPiece.square = square;
+	
+	if (pickedUpPiece.square.piece != null){
+		if (pickedUpPiece.square.piece.color == pickedUpPiece.color){
+			pickedUpPiece.square = oldSquare;
+			pickedUpPiece.square.piece = pickedUpPiece;
+			pickedUpPiece.representation.style.left = pickedUpPiece.square.coordinates.x + "px";
+			pickedUpPiece.representation.style.top = pickedUpPiece.square.coordinates.y + "px";
+			pickedUpPiece.hasMoved = true;
+		}
+		else
+			capture(pickedUpPiece, pickedUpPiece.square.piece);
+	}
+	else{
+		pickedUpPiece.square.piece = pickedUpPiece;
+		pickedUpPiece.representation.style.left = pickedUpPiece.square.coordinates.x + "px";
+		pickedUpPiece.representation.style.top = pickedUpPiece.square.coordinates.y + "px";
+	}
+}
+
+function capture(winner, loser){
+	winner.hasMoved = true;
+	loser.square.piece = null;
+	loser.square = null;
+	document.body.removeChild(loser.representation);
+	winner.square.piece = winner;
+	winner.representation.style.left = winner.square.coordinates.x + "px";
+	winner.representation.style.top = winner.square.coordinates.y + "px";
+}
 
 
 /* Draw the board in the browser */
