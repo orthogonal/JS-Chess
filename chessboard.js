@@ -905,21 +905,27 @@ function movePiece(square){
 				li.innerHTML += "#";
 			else if (check)
 				li.innerHTML += "+";
-			while (node != null){
-				if (node.contents.piece != null){
-					node.contents.piece.epleft = false;
-					node.contents.piece.epright = false;
+			if (pickedUpPiece.color == Piece.WHITE){
+				var node = whitePieces.head;
+				while (node != null){
+					if (node.contents != null){
+						node.contents.epleft = false;
+						node.contents.epright = false;
+					}
+					node = node.next;
 				}
-				node = node.next;
 			}
-			node = blackPieces.head;
-			while (node != null){
-				if (node.contents.piece != null){
-					node.contents.piece.epleft = false;
-					node.contents.piece.epright = false;
+			else{
+				node = blackPieces.head;
+				while (node != null){
+					if (node.contents != null){
+						node.contents.epleft = false;
+						node.contents.epright = false;
+					}
+					node = node.next;
 				}
-				node = node.next;
 			}
+			if (ep) pickedUpPiece.updateMoves();
 			listValidMoves(Piece.WHITE);
 			listValidMoves(Piece.BLACK);
 			(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
@@ -995,22 +1001,27 @@ function capture(winner, loser, from, ep){
 		li.innerHTML += "#";
 	else if (check)
 		li.innerHTML += "+";
-	var node = whitePieces.head;
-	while (node != null){
-		if (node.contents.piece != null){
-			node.contents.piece.epleft = false;
-			node.contents.piece.epright = false;
+	if (pickedUpPiece.color == Piece.WHITE){
+		var node = whitePieces.head;
+		while (node != null){
+			if (node.contents != null){
+				node.contents.epleft = false;
+				node.contents.epright = false;
+			}
+			node = node.next;
 		}
-		node = node.next;
 	}
-	node = blackPieces.head;
-	while (node != null){
-		if (node.contents.piece != null){
-			node.contents.piece.epleft = false;
-			node.contents.piece.epright = false;
+	else{
+		node = blackPieces.head;
+		while (node != null){
+			if (node.contents != null){
+				node.contents.epleft = false;
+				node.contents.epright = false;
+			}
+			node = node.next;
 		}
-		node = node.next;
 	}
+	if (ep) pickedUpPiece.updateMoves();
 	(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
 	if (pickedUpPiece.color == Piece.BLACK) move++;
 	if (computerPlaysBlack && pickedUpPiece.color == Piece.WHITE)
@@ -1053,19 +1064,11 @@ function finalize(color, tryCheck){
 	var node = whitePieces.head;
 	while (node != null){
 		node.contents.updateMoves();
-		if (color == Piece.WHITE && node.contents.piece != null){
-			node.contents.piece.epleft = false;
-			node.contents.piece.epright = false;
-		}
 		node = node.next;
 	}
 	node = blackPieces.head;
 	while (node != null){
 		node.contents.updateMoves();
-		if (color == Piece.BLACK && node.contents.piece != null){
-			node.contents.piece.epleft = false;
-			node.contents.piece.epright = false;
-		}
 		node = node.next;
 	}
 	
@@ -1613,7 +1616,7 @@ newGameButton.onclick = function(){
 		computerPlaysWhite = false;
 		computerPlaysBlack = false;
 		posGen = false;
-	} while (getBoardValue() > whiteMaxAdv)	
+	} while (((whiteMax.checked == true) && (getBoardValue() > whiteMaxAdv)) || ((blackMax.checked == true) && (getBoardValue() < blackMaxAdv)))	
 };
 gameDiv.appendChild(newGameButton);
 
@@ -1723,6 +1726,42 @@ whiteBox.onchange = function(){
 };
 whiteBox.onfocus = function(){whiteBox.setAttribute("value", "");};
 gameDiv.appendChild(whiteBox);
+
+var blackMax = document.createElement("input");
+blackMax.setAttribute("type", "checkbox");
+blackMax.setAttribute("checked", false);
+blackMax.style.position = "absolute";
+blackMax.style.left = "0px";
+blackMax.style.top = "100px";
+gameDiv.appendChild(blackMax);
+var blackMaxSpan = document.createElement("span");
+blackMaxSpan.innerHTML = "Black is up at most 1 points in material";
+blackMaxSpan.style.position = "absolute";
+blackMaxSpan.style.left = "20px";
+blackMaxSpan.style.top = "105px";
+blackMaxSpan.style.fontSize = "0.8em";
+gameDiv.appendChild(blackMaxSpan);
+
+var blackBox = document.createElement("input");
+blackBox.setAttribute("type", "text");
+blackBox.setAttribute("size", 3);
+blackBox.setAttribute("maxlength", 3);
+blackBox.setAttribute("value", "1");
+blackBox.style.position = "absolute";
+blackBox.style.left = "250px";
+blackBox.style.top = "100px";
+blackBox.onchange = function(){
+	if (isNumber(blackBox.value) && (-40 < Math.floor(blackBox.value)) && (Math.floor(blackBox.value) <= 40)){
+		blackMaxAdv = Math.floor(blackBox.value);
+		blackMaxSpan.innerHTML = "Black is up at most " + blackMaxAdv + " points in material";
+		blackBox.value = blackMaxAdv;
+		blackBox.blur();
+	}
+	else
+		blackBox.value = blackMaxAdv;
+};
+blackBox.onfocus = function(){blackBox.setAttribute("value", "");};
+gameDiv.appendChild(blackBox);
 
 function isNumber(n) {				//Credit to "CMS" on StackOverflow
 	  return !isNaN(parseFloat(n)) && isFinite(n);
