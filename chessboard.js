@@ -744,6 +744,9 @@ var turn = true;		//true is white
 var check = false;
 var checkmate = false;
 
+var computerPlaysBlack = true;
+var computerPlaysWhite = false;
+
 function movePiece(square){
 	oldPiece = square.piece;
 	oldSquare = pickedUpPiece.square;
@@ -886,6 +889,10 @@ function movePiece(square){
 			listValidMoves(Piece.WHITE);
 			listValidMoves(Piece.BLACK);
 			(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
+			if (computerPlaysBlack && pickedUpPiece.color == Piece.WHITE)
+				computerMove();
+			else if (computerPlaysWhite && pickedUpPiece.color == Piece.BLACK)
+				computerMove();
 		}
 	}
 	else{
@@ -901,6 +908,7 @@ function movePiece(square){
 				pickedUpPiece.representation.setAttribute("src", "images/bpawn.png");
 		}
 	}
+	
 }
 
 function capture(winner, loser, from, ep){
@@ -954,6 +962,10 @@ function capture(winner, loser, from, ep){
 	else if (check)
 		li.innerHTML += "+";
 	(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
+	if (computerPlaysBlack && pickedUpPiece.color == Piece.WHITE)
+		computerMove();
+	else if (computerPlaysWhite && pickedUpPiece.color == Piece.BLACK)
+		computerMove();
 }
 
 function checkValidMove(piece, square, tryCheck){
@@ -1067,11 +1079,44 @@ function tryCheckmate(color){
 			checkmate = true;
 		}
 	}
+	if (checkmate){
+		computerPlaysBlack = false;
+		computerPlaysWhite = false;
+	}
 }
 
 function printTestTable(piece){
 	for (var i = 7; i >= 0; i--){
 		console.log(piece.available[0][i] + " " + piece.available[1][i] + " " + piece.available[2][i] + " " + piece.available[3][i] + " " + piece.available[4][i] + " " + piece.available[5][i] + " " + piece.available[6][i] + " " + piece.available[7][i]);
+	}
+}
+
+function computerMove(){
+	if (!turn){
+		listValidMoves(Piece.BLACK);
+		var randomMoveSteps = Math.floor(Math.random() * blackMoves.length);
+		var node = blackMoves.head;
+		if (node != null){
+			while (randomMoveSteps != 0){
+				node = node.next;
+				randomMoveSteps--;
+			}
+			pickedUpPiece = node.contents.piece;
+			movePiece(node.contents.square);
+		}
+	}
+	else{
+		listValidMoves(Piece.WHITE);
+		var randomMoveSteps = Math.floor(Math.random() * whiteMoves.length);
+		var node = whiteMoves.head;
+		if (node != null){
+			while (randomMoveSteps != 0){
+				node = node.next;
+				randomMoveSteps--;
+			}
+			pickedUpPiece = node.contents.piece;
+			movePiece(node.contents.square);
+		}
 	}
 }
 
@@ -1119,6 +1164,42 @@ blackList.setAttribute("width", "100px");
 moves_container.appendChild(whiteList);
 moves_container.appendChild(blackList);
 document.body.appendChild(moves_container);
+
+var blackButton = document.createElement("button");
+blackButton.innerHTML = "Black computer is on";
+blackButton.onclick = function(){
+	if (computerPlaysBlack){
+		blackButton.innerHTML = "Black computer is off";
+		computerPlaysBlack = false;
+	}
+	else{
+		blackButton.innerHTML = "Black computer is on";
+		computerPlaysBlack = true;
+		if (!turn) computerMove();
+	}
+};
+blackButton.style.position = "absolute";
+blackButton.setAttribute("width", "200px");
+blackButton.style.left = "600px";
+document.body.appendChild(blackButton);
+
+var whiteButton = document.createElement("button");
+whiteButton.innerHTML = "White computer is off";
+whiteButton.onclick = function(){
+	if (computerPlaysWhite){
+		whiteButton.innerHTML = "White computer is off";
+		computerPlaysWhite = false;
+	}
+	else{
+		whiteButton.innerHTML = "White computer is on";
+		computerPlaysWhite = true;
+		if (turn) computerMove();
+	}
+};
+whiteButton.style.position = "absolute";
+whiteButton.setAttribute("width", "200px");
+whiteButton.style.left = "800px";
+document.body.appendChild(whiteButton);
 
 /*  Initialize all the image elements for the pieces, put the pieces in them, and set the board up properly */
 
