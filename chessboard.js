@@ -763,6 +763,12 @@ var checkmate = false;
 var stalemate = false;
 var draw = false;
 var gameOn = true;
+var totalMoves = 0;
+var totalGames = 0;
+var totalCheckmates = 0;
+var totalStalemates = 0;
+var totalDraws = 0;
+var totalBalance = 0;
 
 var move = 1;
 
@@ -1180,13 +1186,20 @@ function checkEnd(color){
 		computerPlaysBlack = false;
 		computerPlaysWhite = false;
 		gameOn = false;
-		console.log("Game over" + checkmate + stalemate + draw);
+		totalMoves += move;
+		totalGames++;
+		totalBalance += getBoardValue();
 		if (checkmate)
-			console.log("Checkmate");
+			totalCheckmates++;
 		if (stalemate)
-			console.log("Stalemate");
+			totalStalemates++;
 		if (draw)
-			console.log("Draw");
+			totalDraws++;
+		infoP.innerHTML = "So far " + totalGames + " games have been played.<br />The average game lasted " + (totalMoves / totalGames).toFixed(3) + 
+							" moves<br />The average material balance at the end was " + (totalBalance / totalGames).toFixed(3) + "<br />" +
+		"There have been " + totalCheckmates + " decisive games and " + (totalStalemates + totalDraws) + " draws.<br />" + 
+		"Of the draws, " + totalStalemates + " were stalemates, and " + totalDraws + " were from insufficient material.";
+
 	}
 }
 
@@ -1593,6 +1606,19 @@ resetButton.style.left = "150px";
 resetButton.style.top = "20px";
 gameDiv.appendChild(resetButton);
 
+var genGameButton = document.createElement("button");
+genGameButton.setAttribute("width", "100px");
+genGameButton.innerHTML = "Full Game";
+genGameButton.style.position = "absolute";
+genGameButton.style.left = "210px";
+genGameButton.style.top = "20px";
+genGameButton.onclick = function(){
+	resetButton.click();
+	blackButton.click();
+	whiteButton.click();
+};
+gameDiv.appendChild(genGameButton);
+
 var movesToPlay = 10;
 var posGen = false;
 var whiteMaxAdv = 1;
@@ -1700,7 +1726,7 @@ var whiteMaxSpan = document.createElement("span");
 whiteMaxSpan.innerHTML = "White is up at most 1 points in material";
 whiteMaxSpan.style.position = "absolute";
 whiteMaxSpan.style.left = "25px";
-whiteMaxSpan.style.top = "155px";
+whiteMaxSpan.style.top = "152px";
 whiteMaxSpan.style.fontSize = "0.8em";
 gameDiv.appendChild(whiteMaxSpan);
 
@@ -1736,7 +1762,7 @@ var blackMaxSpan = document.createElement("span");
 blackMaxSpan.innerHTML = "Black is up at most 1 points in material";
 blackMaxSpan.style.position = "absolute";
 blackMaxSpan.style.left = "25px";
-blackMaxSpan.style.top = "205px";
+blackMaxSpan.style.top = "202px";
 blackMaxSpan.style.fontSize = "0.8em";
 gameDiv.appendChild(blackMaxSpan);
 
@@ -1760,6 +1786,18 @@ blackBox.onchange = function(){
 };
 blackBox.onfocus = function(){blackBox.setAttribute("value", "");};
 gameDiv.appendChild(blackBox);
+
+var infoDiv = document.createElement("div");
+infoDiv.setAttribute("width", "300px");
+infoDiv.style.position = "absolute";
+infoDiv.style.left = "620px";
+infoDiv.style.top = "10px";
+document.body.appendChild(infoDiv);
+
+var infoP = document.createElement("p");
+infoP.innerHTML = "So far 0 games have been played.<br />The average game lasted 0 moves<br />The average material balance at the end was 0<br />" +
+					"There have been 0 decisive games and 0 draws.<br />Of the draws, 0 were stalemates, and 0 were from insufficient material.";
+infoDiv.appendChild(infoP);
 
 function isNumber(n) {				//Credit to "CMS" on StackOverflow
 	  return !isNaN(parseFloat(n)) && isFinite(n);
