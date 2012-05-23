@@ -738,7 +738,24 @@ document.onmousedown = function(e){
 	
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*===========================================*/
 /*  Code for what happens when a piece moves */
+/*===========================================*/
 
 var turn = true;		//true is white
 var check = false;
@@ -746,6 +763,8 @@ var checkmate = false;
 var stalemate = false;
 var draw = false;
 var gameOn = true;
+
+var move = 1;
 
 var computerPlaysBlack = true;
 var computerPlaysWhite = false;
@@ -945,6 +964,7 @@ function capture(winner, loser, from, ep){
 	loser.square.piece = null;
 	loser.square = null;
 	document.body.removeChild(loser.representation);
+	loser.representation = null;
 	if (loser.color == Piece.WHITE)
 		whitePieces.remove(loser);
 	else
@@ -1173,6 +1193,8 @@ function computerMove(){
 			}
 			pickedUpPiece = node.contents.piece;
 			movePiece(node.contents.square);
+			pickedUp = false;
+			pickedUpPiece = null;
 		}
 	}
 	else{
@@ -1186,9 +1208,18 @@ function computerMove(){
 			}
 			pickedUpPiece = node.contents.piece;
 			movePiece(node.contents.square);
+			pickedUp = false;
+			pickedUpPiece = null;
 		}
 	}
 }
+
+
+
+
+
+
+
 
 
 /* Draw the board in the browser */
@@ -1206,9 +1237,9 @@ for (var i = 1; i <= 8; i++){
 		row.appendChild(cell);
 		cell.style.borderWidth = "0px";
 		if ((i + j) % 2 == 0)
-			cell.style.backgroundColor = "rgb(0, 0, 0)";
+			cell.style.backgroundColor = "rgb(200, 200, 200)";
 		else
-			cell.style.backgroundColor = "rgb(230, 230, 230)";
+			cell.style.backgroundColor = "rgb(245, 245, 245)";
 	}
 }
 board.style.position = "absolute";
@@ -1270,6 +1301,253 @@ whiteButton.style.position = "absolute";
 whiteButton.setAttribute("width", "200px");
 whiteButton.style.left = "800px";
 document.body.appendChild(whiteButton);
+
+var resetButton = document.createElement("button");
+resetButton.innerHTML = "Reset";
+resetButton.onclick = function(){
+	computerPlaysBlack = false;
+	computerPlaysWhite = false;
+	whiteButton.innerHTML = "White computer is off";
+	blackButton.innerHTML = "Black computer is off";
+	whiteList.innerHTML = "";
+	blackList.innerHTML = "";
+	turn = true;
+	for (var i = 0; i < 8; i++)
+		for (var j = 0; j < 8; j++){
+			squares[i][j].piece = null;
+		}
+	if (wp1.representation != null) document.body.removeChild(img_wp1);
+	if (wp2.representation != null) document.body.removeChild(img_wp2);
+	if (wp3.representation != null) document.body.removeChild(img_wp3);
+	if (wp4.representation != null) document.body.removeChild(img_wp4);
+	if (wp5.representation != null) document.body.removeChild(img_wp5);
+	if (wp6.representation != null) document.body.removeChild(img_wp6);
+	if (wp7.representation != null) document.body.removeChild(img_wp7);
+	if (wp8.representation != null) document.body.removeChild(img_wp8);
+	if (wn1.representation != null) document.body.removeChild(img_wn1);
+	if (wn2.representation != null) document.body.removeChild(img_wn2);
+	if (wb1.representation != null) document.body.removeChild(img_wb1);
+	if (wb2.representation != null) document.body.removeChild(img_wb2);
+	if (wr1.representation != null) document.body.removeChild(img_wr1);
+	if (wr2.representation != null) document.body.removeChild(img_wr2);
+	if (wq.representation != null) document.body.removeChild(img_wq);
+	if (wk.representation != null) document.body.removeChild(img_wk);
+	if (bp1.representation != null) document.body.removeChild(img_bp1);
+	if (bp2.representation != null) document.body.removeChild(img_bp2);
+	if (bp3.representation != null) document.body.removeChild(img_bp3);
+	if (bp4.representation != null) document.body.removeChild(img_bp4);
+	if (bp5.representation != null) document.body.removeChild(img_bp5);
+	if (bp6.representation != null) document.body.removeChild(img_bp6);
+	if (bp7.representation != null) document.body.removeChild(img_bp7);
+	if (bp8.representation != null) document.body.removeChild(img_bp8);
+	if (bn1.representation != null) document.body.removeChild(img_bn1);
+	if (bn2.representation != null) document.body.removeChild(img_bn2);
+	if (bb1.representation != null) document.body.removeChild(img_bb1);
+	if (bb2.representation != null) document.body.removeChild(img_bb2);
+	if (br1.representation != null) document.body.removeChild(img_br1);
+	if (br2.representation != null) document.body.removeChild(img_br2);
+	if (bq.representation != null) document.body.removeChild(img_bq);
+	if (bk.representation != null) document.body.removeChild(img_bk);
+	
+	 pieceImages = [];
+
+	 img_wp1 = document.createElement("img");
+	 img_wp2 = document.createElement("img");
+	 img_wp3 = document.createElement("img");
+	 img_wp4 = document.createElement("img");
+	 img_wp5 = document.createElement("img");
+	 img_wp6 = document.createElement("img");
+	 img_wp7 = document.createElement("img");
+	 img_wp8 = document.createElement("img");
+	 img_wn1 = document.createElement("img");
+	 img_wn2 = document.createElement("img");
+	 img_wb1 = document.createElement("img");
+	 img_wb2 = document.createElement("img");
+	 img_wr1 = document.createElement("img");
+	 img_wr2 = document.createElement("img");
+	 img_wq = document.createElement("img");
+	 img_wk = document.createElement("img");
+
+	 img_bp1 = document.createElement("img");
+	 img_bp2 = document.createElement("img");
+	 img_bp3 = document.createElement("img");
+	 img_bp4 = document.createElement("img");
+	 img_bp5 = document.createElement("img");
+	 img_bp6 = document.createElement("img");
+	 img_bp7 = document.createElement("img");
+	 img_bp8 = document.createElement("img");
+	 img_bn1 = document.createElement("img");
+	 img_bn2 = document.createElement("img");
+	 img_bb1 = document.createElement("img");
+	 img_bb2 = document.createElement("img");
+	 img_br1 = document.createElement("img");
+	 img_br2 = document.createElement("img");
+	 img_bq = document.createElement("img");
+	 img_bk = document.createElement("img");
+
+	pieceImages.push(img_wp1, img_wp2, img_wp3, img_wp4, img_wp5, img_wp6, img_wp7, img_wp8,
+					 img_wn1, img_wn2, img_wb1, img_wb2, img_wr1, img_wr2, img_wq, img_wk,
+					 img_bp1, img_bp2, img_bp3, img_bp4, img_bp5, img_bp6, img_bp7, img_bp8,
+					 img_bn1, img_bn2, img_bb1, img_bb2, img_br1, img_br2, img_bq, img_bk);
+
+	for (var i = 0; i < 32; i++){
+		if (i < 8)
+			pieceImages[i].setAttribute("src", "images/wpawn.png");
+		else if (i < 10)
+			pieceImages[i].setAttribute("src", "images/wknight.png");
+		else if (i < 12)
+			pieceImages[i].setAttribute("src", "images/wbishop.png");
+		else if (i < 14)
+			pieceImages[i].setAttribute("src", "images/wrook.png");
+		else if (i == 14)
+			pieceImages[i].setAttribute("src", "images/wqueen.png");
+		else if (i == 15)
+			pieceImages[i].setAttribute("src", "images/wking.png");
+		else if (i < 24)
+			pieceImages[i].setAttribute("src", "images/bpawn.png");
+		else if (i < 26)
+			pieceImages[i].setAttribute("src", "images/bknight.png");
+		else if (i < 28)
+			pieceImages[i].setAttribute("src", "images/bbishop.png");
+		else if (i < 30)
+			pieceImages[i].setAttribute("src", "images/brook.png");
+		else if (i == 30)
+			pieceImages[i].setAttribute("src", "images/bqueen.png");
+		else if (i == 31)
+			pieceImages[i].setAttribute("src", "images/bking.png");
+		pieceImages[i].setAttribute("width", "50px");
+		pieceImages[i].setAttribute("height", "50px");
+		pieceImages[i].style.position = "absolute";
+		if (Math.floor(i / 8) % 2 == 0)
+			pieceImages[i].style.left = 50 * (i % 8) + "px";
+		else
+			switch (i % 8){
+			case 0:
+				pieceImages[i].style.left = "50px";
+				break;
+			case 1:
+				pieceImages[i].style.left = "300px";
+				break;
+			case 2:
+				pieceImages[i].style.left = "100px";
+				break;
+			case 3:
+				pieceImages[i].style.left = "250px";
+				break;
+			case 4:
+				pieceImages[i].style.left = "0px";
+				break;
+			case 5:
+				pieceImages[i].style.left = "350px";
+				break;
+			case 6:
+				pieceImages[i].style.left = "150px";
+				break;
+			case 7:
+				pieceImages[i].style.left = "200px";
+				break;
+			}
+		if (i < 8)
+			pieceImages[i].style.top = "300px";
+		else if (i < 16)
+			pieceImages[i].style.top = "350px";
+		else if (i < 24)
+			pieceImages[i].style.top = "50px";
+		else
+			pieceImages[i].style.top = "0px";
+		document.body.appendChild(pieceImages[i]);
+	}
+
+	wp1 = new Piece(Piece.WHITE, Piece.PAWN, img_wp1, a2);
+	wp2 = new Piece(Piece.WHITE, Piece.PAWN, img_wp2, b2);
+	wp3 = new Piece(Piece.WHITE, Piece.PAWN, img_wp3, c2);
+	wp4 = new Piece(Piece.WHITE, Piece.PAWN, img_wp4, d2);
+	wp5 = new Piece(Piece.WHITE, Piece.PAWN, img_wp5, e2);
+	wp6 = new Piece(Piece.WHITE, Piece.PAWN, img_wp6, f2);
+	wp7 = new Piece(Piece.WHITE, Piece.PAWN, img_wp7, g2);
+	wp8 = new Piece(Piece.WHITE, Piece.PAWN, img_wp8, h2);
+	wr1 = new Piece(Piece.WHITE, Piece.ROOK, img_wr1, a1);
+	wn1 = new Piece(Piece.WHITE, Piece.KNIGHT, img_wn1, b1);
+	wb1 = new Piece(Piece.WHITE, Piece.BISHOP, img_wb1, c1);
+	wq = new Piece(Piece.WHITE, Piece.QUEEN, img_wq, d1);
+	wk = new Piece(Piece.WHITE, Piece.KING, img_wk, e1);
+	wb2 = new Piece(Piece.WHITE, Piece.BISHOP, img_wb2, f1);
+	wn2 = new Piece(Piece.WHITE, Piece.KNIGHT, img_wn2, g1);
+	wr2 = new Piece(Piece.WHITE, Piece.ROOK, img_wr2, h1);
+
+	bp1 = new Piece(Piece.BLACK, Piece.PAWN, img_bp1, a7);
+	bp2 = new Piece(Piece.BLACK, Piece.PAWN, img_bp2, b7);
+	bp3 = new Piece(Piece.BLACK, Piece.PAWN, img_bp3, c7);
+	bp4 = new Piece(Piece.BLACK, Piece.PAWN, img_bp4, d7);
+	bp5 = new Piece(Piece.BLACK, Piece.PAWN, img_bp5, e7);
+	bp6 = new Piece(Piece.BLACK, Piece.PAWN, img_bp6, f7);
+	bp7 = new Piece(Piece.BLACK, Piece.PAWN, img_bp7, g7);
+	bp8 = new Piece(Piece.BLACK, Piece.PAWN, img_bp8, h7);
+	br1 = new Piece(Piece.BLACK, Piece.ROOK, img_br1, a8);
+	bn1 = new Piece(Piece.BLACK, Piece.KNIGHT, img_bn1, b8);
+	bb1 = new Piece(Piece.BLACK, Piece.BISHOP, img_bb1, c8);
+	bq = new Piece(Piece.BLACK, Piece.QUEEN, img_bq, d8);
+	bk = new Piece(Piece.BLACK, Piece.KING, img_bk, e8);
+	bb2 = new Piece(Piece.BLACK, Piece.BISHOP, img_bb2, f8);
+	bn2 = new Piece(Piece.BLACK, Piece.KNIGHT, img_bn2, g8);
+	br2 = new Piece(Piece.BLACK, Piece.ROOK, img_br2, h8);
+	
+	whitePieces = new LinkedList();
+	blackPieces = new LinkedList();
+
+	whitePieces.add(wp1);
+	whitePieces.add(wp2);
+	whitePieces.add(wp3);
+	whitePieces.add(wp4);
+	whitePieces.add(wp5);
+	whitePieces.add(wp6);
+	whitePieces.add(wp7);
+	whitePieces.add(wp8);
+	whitePieces.add(wr1);
+	whitePieces.add(wr2);
+	whitePieces.add(wn1);
+	whitePieces.add(wn2);
+	whitePieces.add(wb1);
+	whitePieces.add(wb2);
+	whitePieces.add(wq);
+	whitePieces.add(wk);
+
+	blackPieces.add(bp1);
+	blackPieces.add(bp2);
+	blackPieces.add(bp3);
+	blackPieces.add(bp4);
+	blackPieces.add(bp5);
+	blackPieces.add(bp6);
+	blackPieces.add(bp7);
+	blackPieces.add(bp8);
+	blackPieces.add(br1);
+	blackPieces.add(br2);
+	blackPieces.add(bn1);
+	blackPieces.add(bn2);
+	blackPieces.add(bb1);
+	blackPieces.add(bb2);
+	blackPieces.add(bq);
+	blackPieces.add(bk);
+
+	whiteMoves = new LinkedList(null);
+	blackMoves = new LinkedList(null);
+
+	listValidMoves(Piece.WHITE);
+	listValidMoves(Piece.BLACK);
+	
+	pickedUp = false;
+	pickedUpPiece = null;
+	check = false;
+	checkmate = false;
+	stalemate = false;
+	draw = false;
+	gameOn = true;
+	move = 1;
+};
+resetButton.setAttribute("width", "100px");
+resetButton.style.position = "absolute";
+resetButton.style.left = "950px";
+document.body.appendChild(resetButton);
 
 /*  Initialize all the image elements for the pieces, put the pieces in them, and set the board up properly */
 
