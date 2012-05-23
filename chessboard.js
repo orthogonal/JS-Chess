@@ -1103,8 +1103,8 @@ function checkEnd(color){
 			else{									//Both players have two pieces
 				var whitePiece2 = whitePieces.head.next.contents.type;
 				var blackPiece2 = blackPieces.head.next.contents.type;
-				if ((blackPiece1 == Piece.KNIGHT || blackPiece1 == Piece.BISHOP) || (blackPiece2 == Piece.KNIGHT || blackPiece2 == Piece.BISHOP)
-				&& (whitePiece1 == Piece.KNIGHT || whitePiece1 == Piece.BISHOP) || (whitePiece2 == Piece.KNIGHT || whitePiece2 == Piece.BISHOP))
+				if (((blackPiece1 == Piece.KNIGHT || blackPiece1 == Piece.BISHOP) || (blackPiece2 == Piece.KNIGHT || blackPiece2 == Piece.BISHOP))
+				&& ((whitePiece1 == Piece.KNIGHT || whitePiece1 == Piece.BISHOP) || (whitePiece2 == Piece.KNIGHT || whitePiece2 == Piece.BISHOP)))
 					draw = true;
 			}
 		}
