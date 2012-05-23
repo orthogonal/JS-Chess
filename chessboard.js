@@ -792,7 +792,7 @@ function movePiece(square){
 				}
 			}
 			else if (ep)
-				capture (pickedUpPiece, squares[pickedUpPiece.square.column - 1][pickedUpPiece.square.row - ((pickedUpPiece.color == Piece.WHITE) ? 2 : 0)].piece, oldSquare, true);
+				capture(pickedUpPiece, squares[pickedUpPiece.square.column - 1][pickedUpPiece.square.row - ((pickedUpPiece.color == Piece.WHITE) ? 2 : 0)].piece, oldSquare, true);
 			else
 				capture(pickedUpPiece, pickedUpPiece.square.piece, oldSquare, false);
 		}
@@ -1082,8 +1082,33 @@ function checkEnd(color){
 		}
 	}
 	
-	if (whitePieces.length <= 2 && blackPieces.length <= 2)
-		draw = true;									//This is totally wrong but here to test stuff.
+	if (whitePieces.length <= 2 && blackPieces.length <= 2){
+		var whitePiece1 = whitePieces.head.contents.type;
+		var blackPiece1 = blackPieces.head.contents.type;
+		if (whitePieces.length == 1){
+			if (blackPieces.length == 1)			//Both players have one piece
+				draw = true;
+			else{
+				var blackPiece2 = blackPieces.head.next.contents.type;		//White has one piece and black has 2
+				if ((blackPiece1 == Piece.KNIGHT || blackPiece1 == Piece.BISHOP) || (blackPiece2 == Piece.KNIGHT || blackPiece2 == Piece.BISHOP))
+					draw = true;
+			}			
+		}
+		else{
+			if (blackPieces.length == 1){			//Black has one piece and white has 2
+				var whitePiece2 = whitePieces.head.next.contents.type;
+				if ((whitePiece1 == Piece.KNIGHT || whitePiece1 == Piece.BISHOP) || (whitePiece2 == Piece.KNIGHT || whitePiece2 == Piece.BISHOP))
+					draw = true;
+			}	
+			else{									//Both players have two pieces
+				var whitePiece2 = whitePieces.head.next.contents.type;
+				var blackPiece2 = blackPieces.head.next.contents.type;
+				if ((blackPiece1 == Piece.KNIGHT || blackPiece1 == Piece.BISHOP) || (blackPiece2 == Piece.KNIGHT || blackPiece2 == Piece.BISHOP)
+				&& (whitePiece1 == Piece.KNIGHT || whitePiece1 == Piece.BISHOP) || (whitePiece2 == Piece.KNIGHT || whitePiece2 == Piece.BISHOP))
+					draw = true;
+			}
+		}
+	}
 	
 	if (checkmate || stalemate || draw){
 		computerPlaysBlack = false;
