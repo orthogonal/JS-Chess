@@ -576,12 +576,12 @@ function Piece(color, type, obj, square){
 			if (this.color == Piece.WHITE && !wk.hasMoved){
 				if (!wr1.hasMoved && squares[5][0].piece == null && squares[6][0].piece == null)
 					this.available[6][0] = Piece.KINGSIDE_CASTLE;
-				if (!wr2.hasMoved && squares[3][0].piece == null && squares[2][0].piece == null)
+				if (!wr2.hasMoved && squares[3][0].piece == null && squares[2][0].piece == null && squares[1][0].piece == null)
 					this.available[2][0] = Piece.QUEENSIDE_CASTLE;
 			} else if (this.color == Piece.BLACK && !bk.hasMoved){
 				if (!br1.hasMoved && squares[5][7].piece == null && squares[6][7].piece == null)
 					this.available[6][7] = Piece.KINGSIDE_CASTLE;
-				if (!br2.hasMoved && squares[3][7].piece == null && squares[2][7].piece == null)
+				if (!br2.hasMoved && squares[3][7].piece == null && squares[2][7].piece == null && squares[1][0].piece == null)
 					this.available[2][7] = Piece.QUEENSIDE_CASTLE;
 			}
 		}
@@ -816,7 +816,11 @@ function movePiece(square){
 				capture(pickedUpPiece, pickedUpPiece.square.piece, oldSquare, false);
 		}
 		else{
-			var li = document.createElement("li");
+			var newMoveString = "";
+			if (pickedUpPiece.color == Piece.WHITE) 
+				newMoveString += (move + ". ");
+			else
+				newMoveString += "&nbsp&nbsp&nbsp";
 			pickedUpPiece.square.piece = pickedUpPiece;
 			pickedUpPiece.representation.style.left = pickedUpPiece.square.coordinates.x + "px";
 			pickedUpPiece.representation.style.top = pickedUpPiece.square.coordinates.y + "px";
@@ -830,7 +834,7 @@ function movePiece(square){
 						wr1.hasMoved = true;
 						wr1.representation.style.left = wr1.square.coordinates.x + "px";
 						wr1.representation.style.top = wr1.square.coordinates.y + "px";
-						li.innerHTML = "0-0-0";
+						newMoveString += "0-0-0";
 					}
 					else if (pickedUpPiece.color == Piece.BLACK){
 						br1.square.piece = null;
@@ -839,7 +843,7 @@ function movePiece(square){
 						br1.hasMoved = true;
 						br1.representation.style.left = br1.square.coordinates.x + "px";
 						br1.representation.style.top = br1.square.coordinates.y + "px";
-						li.innerHTML = "0-0-0";
+						newMoveString += "0-0-0";
 					}
 				}
 				if (pickedUpPiece.square.column == 7){			//Kingside Castle
@@ -850,7 +854,7 @@ function movePiece(square){
 						wr2.hasMoved = true;
 						wr2.representation.style.left = wr2.square.coordinates.x + "px";
 						wr2.representation.style.top = wr2.square.coordinates.y + "px";
-						li.innerHTML = "0-0";
+						newMoveString += "0-0";
 					}
 					else if (pickedUpPiece.color == Piece.BLACK){
 						br2.square.piece = null;
@@ -859,33 +863,33 @@ function movePiece(square){
 						br2.hasMoved = true;
 						br2.representation.style.left = br2.square.coordinates.x + "px";
 						br2.representation.style.top = br2.square.coordinates.y + "px";
-						li.innerHTML = "0-0";
+						newMoveString += "0-0";
 					}
 				}
 			}
 			else{
 				switch (pickedUpPiece.type){
 				case 0:
-					li.innerHTML = "";
+					newMoveString += "";
 					break;
 				case 1:
-					li.innerHTML = "N";
+					newMoveString += "N";
 					break;
 				case 2:
-					li.innerHTML = "B";
+					newMoveString += "B";
 					break;
 				case 3:
-					li.innerHTML = "R";
+					newMoveString += "R";
 					break;
 				case 4:
-					li.innerHTML = "Q";
+					newMoveString += "Q";
 					break;
 				case 5:
-					li.innerHTML = "K";
+					newMoveString += "K";
 					break;
 				}
-				li.innerHTML += String.fromCharCode(96 + pickedUpPiece.square.column);
-				li.innerHTML += pickedUpPiece.square.row;
+				newMoveString += String.fromCharCode(96 + pickedUpPiece.square.column);
+				newMoveString += pickedUpPiece.square.row;
 			}
 			if (pickedUpPiece.type == Piece.PAWN && Math.abs(pickedUpPiece.square.row - oldSquare.row) != 1){
 				if ((pickedUpPiece.square.column > 1) 
@@ -902,9 +906,10 @@ function movePiece(square){
 			pickedUpPiece.hasMoved = true;
 			checkEnd(Math.abs(pickedUpPiece.color - 1));
 			if (checkmate)
-				li.innerHTML += "#";
+				newMoveString += "#";
 			else if (check)
-				li.innerHTML += "+";
+				newMoveString += "+";
+			if (pickedUpPiece.color == Piece.BLACK) newMoveString += "<br />";
 			if (pickedUpPiece.color == Piece.WHITE){
 				var node = whitePieces.head;
 				while (node != null){
@@ -928,7 +933,7 @@ function movePiece(square){
 			if (ep) pickedUpPiece.updateMoves();
 			listValidMoves(Piece.WHITE);
 			listValidMoves(Piece.BLACK);
-			(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
+			moveList.innerHTML += newMoveString;
 			if (pickedUpPiece.color == Piece.BLACK) move++;
 			if (computerPlaysBlack && pickedUpPiece.color == Piece.WHITE)
 				computerMove();
@@ -953,34 +958,37 @@ function movePiece(square){
 }
 
 function capture(winner, loser, from, ep){
-	if (loser == null) console.log(from + " " + ep);
-	var li = document.createElement("li");
+	var newMoveString = "";
+	if (pickedUpPiece.color == Piece.WHITE) 
+		newMoveString += (move + ". ");
+	else
+		newMoveString += "&nbsp&nbsp&nbsp";
 	switch (winner.type){
 	case 0:
-		li.innerHTML += String.fromCharCode(96 + from.column);
-		li.innerHTML += from.row;
+		newMoveString += String.fromCharCode(96 + from.column);
+		newMoveString += from.row;
 		break;
 	case 1:
-		li.innerHTML = "N";
+		newMoveString += "N";
 		break;
 	case 2:
-		li.innerHTML = "B";
+		newMoveString += "B";
 		break;
 	case 3:
-		li.innerHTML = "R";
+		newMoveString += "R";
 		break;
 	case 4:
-		li.innerHTML = "Q";
+		newMoveString += "Q";
 		break;
 	case 5:
-		li.innerHTML = "K";
+		newMoveString += "K";
 		break;
 	}
-	li.innerHTML += "x";
-	li.innerHTML += String.fromCharCode(96 + loser.square.column);
-	li.innerHTML += loser.square.row;
+	newMoveString += "x";
+	newMoveString += String.fromCharCode(96 + loser.square.column);
+	newMoveString += loser.square.row;
 	if (ep)
-		li.innerHTML += "ep";
+		newMoveString += "e.p.";
 	loser.square.piece = null;
 	loser.square = null;
 	document.body.removeChild(loser.representation);
@@ -998,9 +1006,10 @@ function capture(winner, loser, from, ep){
 	listValidMoves(Piece.BLACK);
 	checkEnd(Math.abs(winner.color - 1));
 	if (checkmate)
-		li.innerHTML += "#";
+		newMoveString += "#";
 	else if (check)
-		li.innerHTML += "+";
+		newMoveString += "+";
+	if (pickedUpPiece.color == Piece.BLACK) newMoveString += "<br />";
 	if (pickedUpPiece.color == Piece.WHITE){
 		var node = whitePieces.head;
 		while (node != null){
@@ -1022,7 +1031,7 @@ function capture(winner, loser, from, ep){
 		}
 	}
 	if (ep) pickedUpPiece.updateMoves();
-	(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
+	moveList.innerHTML += newMoveString;
 	if (pickedUpPiece.color == Piece.BLACK) move++;
 	if (computerPlaysBlack && pickedUpPiece.color == Piece.WHITE)
 		computerMove();
@@ -1281,24 +1290,23 @@ board.style.left = "0px";
 board.style.top = "0px";
 document.body.appendChild(board);
 
-var moves_container = document.createElement("div");
-moves_container.setAttribute("width", "200px");
-moves_container.style.position = "absolute";
-moves_container.style.left = "400px";
-moves_container.style.top = "0px";
-var whiteList = document.createElement("ol");
-whiteList.style.position = "absolute";
-whiteList.style.left = "0px";
-whiteList.setAttribute("width", "100px");
-var blackList = document.createElement("ul");
-blackList.style.listStyleType = "none";
-blackList.style.position = "absolute";
-blackList.style.left = "100px";
-blackList.setAttribute("width", "100px");
+var moveListDiv = document.createElement("div");
+moveListDiv.setAttribute("width", "200px");
+moveListDiv.style.position = "absolute";
+moveListDiv.style.left = "410px";
+moveListDiv.style.top = "0px";
+document.body.appendChild(moveListDiv);
+var moveList = document.createElement("p");
+moveListDiv.appendChild(moveList);
 
-moves_container.appendChild(whiteList);
-moves_container.appendChild(blackList);
-document.body.appendChild(moves_container);
+var gameDiv = document.createElement("div");
+gameDiv.style.width = "300px";
+gameDiv.style.height = "250px";
+gameDiv.style.border = "3px solid black";
+gameDiv.style.position = "absolute";
+gameDiv.style.left = "620px";
+gameDiv.style.top = "200px";
+document.body.appendChild(gameDiv);
 
 var blackButton = document.createElement("button");
 blackButton.innerHTML = "Black computer is on";
@@ -1315,8 +1323,9 @@ blackButton.onclick = function(){
 };
 blackButton.style.position = "absolute";
 blackButton.setAttribute("width", "200px");
-blackButton.style.left = "600px";
-document.body.appendChild(blackButton);
+blackButton.style.left = "5px";
+blackButton.style.top = "5px";
+gameDiv.appendChild(blackButton);
 
 var whiteButton = document.createElement("button");
 whiteButton.innerHTML = "White computer is off";
@@ -1333,8 +1342,9 @@ whiteButton.onclick = function(){
 };
 whiteButton.style.position = "absolute";
 whiteButton.setAttribute("width", "200px");
-whiteButton.style.left = "800px";
-document.body.appendChild(whiteButton);
+whiteButton.style.left = "5px";
+whiteButton.style.top = "35px";
+gameDiv.appendChild(whiteButton);
 
 var resetButton = document.createElement("button");
 resetButton.innerHTML = "Reset";
@@ -1343,8 +1353,7 @@ resetButton.onclick = function(){
 	computerPlaysWhite = false;
 	whiteButton.innerHTML = "White computer is off";
 	blackButton.innerHTML = "Black computer is off";
-	whiteList.innerHTML = "";
-	blackList.innerHTML = "";
+	moveList.innerHTML = "";
 	turn = true;
 	for (var i = 0; i < 8; i++)
 		for (var j = 0; j < 8; j++){
@@ -1580,17 +1589,9 @@ resetButton.onclick = function(){
 };
 resetButton.setAttribute("width", "100px");
 resetButton.style.position = "absolute";
-resetButton.style.left = "950px";
-document.body.appendChild(resetButton);
-
-var gameDiv = document.createElement("div");
-gameDiv.style.width = "300px";
-gameDiv.style.height = "300px";
-gameDiv.style.backgroundColor = "rgb(200, 0, 150)";
-gameDiv.style.position = "absolute";
-gameDiv.style.left = "600px";
-gameDiv.style.top = "200px";
-document.body.appendChild(gameDiv);
+resetButton.style.left = "150px";
+resetButton.style.top = "20px";
+gameDiv.appendChild(resetButton);
 
 var movesToPlay = 10;
 var posGen = false;
@@ -1601,22 +1602,19 @@ var newGameButton = document.createElement("button");
 newGameButton.setAttribute("width", "200px");
 newGameButton.innerHTML = "New position after 10 moves";
 newGameButton.style.position = "absolute";
-newGameButton.style.left = "0px";
-newGameButton.style.top = "0px";
+newGameButton.style.left = "5px";
+newGameButton.style.top = "100px";
 newGameButton.onclick = function(){
 	do{
 		resetButton.click();
 		posGen = true;
 		computerPlaysWhite = true;
 		computerPlaysBlack = true;
-		while (move <= movesToPlay){
-			computerMove();
-			console.log(move + ", " + movesToPlay);
-		}
+		computerMove();
 		computerPlaysWhite = false;
 		computerPlaysBlack = false;
 		posGen = false;
-	} while (((whiteMax.checked == true) && (getBoardValue() > whiteMaxAdv)) || ((blackMax.checked == true) && (getBoardValue() < blackMaxAdv)))	
+	} while (((whiteMax.checked == true) && (getBoardValue() > whiteMaxAdv)) || ((blackMax.checked == true) && (getBoardValue() < (-1 * blackMaxAdv))))	
 };
 gameDiv.appendChild(newGameButton);
 
@@ -1677,7 +1675,7 @@ movesBox.setAttribute("maxlength", 3);
 movesBox.setAttribute("value", "10");
 movesBox.style.position = "absolute";
 movesBox.style.left = "220px";
-movesBox.style.top = "0px";
+movesBox.style.top = "100px";
 movesBox.onchange = function(){
 	if (isNumber(movesBox.value) && (0 < Math.floor(movesBox.value)) && (Math.floor(movesBox.value) <= 999)){
 		movesToPlay = Math.floor(movesBox.value);
@@ -1695,14 +1693,14 @@ var whiteMax = document.createElement("input");
 whiteMax.setAttribute("type", "checkbox");
 whiteMax.setAttribute("checked", false);
 whiteMax.style.position = "absolute";
-whiteMax.style.left = "0px";
-whiteMax.style.top = "50px";
+whiteMax.style.left = "5px";
+whiteMax.style.top = "150px";
 gameDiv.appendChild(whiteMax);
 var whiteMaxSpan = document.createElement("span");
 whiteMaxSpan.innerHTML = "White is up at most 1 points in material";
 whiteMaxSpan.style.position = "absolute";
-whiteMaxSpan.style.left = "20px";
-whiteMaxSpan.style.top = "55px";
+whiteMaxSpan.style.left = "25px";
+whiteMaxSpan.style.top = "155px";
 whiteMaxSpan.style.fontSize = "0.8em";
 gameDiv.appendChild(whiteMaxSpan);
 
@@ -1713,9 +1711,9 @@ whiteBox.setAttribute("maxlength", 3);
 whiteBox.setAttribute("value", "1");
 whiteBox.style.position = "absolute";
 whiteBox.style.left = "250px";
-whiteBox.style.top = "50px";
+whiteBox.style.top = "150px";
 whiteBox.onchange = function(){
-	if (isNumber(whiteBox.value) && (-40 < Math.floor(whiteBox.value)) && (Math.floor(whiteBox.value) <= 40)){
+	if (isNumber(whiteBox.value) && (-40 < Math.floor(whiteBox.value)) && (Math.floor(whiteBox.value) <= 50)){
 		whiteMaxAdv = Math.floor(whiteBox.value);
 		whiteMaxSpan.innerHTML = "White is up at most " + whiteMaxAdv + " points in material";
 		whiteBox.value = whiteMaxAdv;
@@ -1731,14 +1729,14 @@ var blackMax = document.createElement("input");
 blackMax.setAttribute("type", "checkbox");
 blackMax.setAttribute("checked", false);
 blackMax.style.position = "absolute";
-blackMax.style.left = "0px";
-blackMax.style.top = "100px";
+blackMax.style.left = "5px";
+blackMax.style.top = "200px";
 gameDiv.appendChild(blackMax);
 var blackMaxSpan = document.createElement("span");
 blackMaxSpan.innerHTML = "Black is up at most 1 points in material";
 blackMaxSpan.style.position = "absolute";
-blackMaxSpan.style.left = "20px";
-blackMaxSpan.style.top = "105px";
+blackMaxSpan.style.left = "25px";
+blackMaxSpan.style.top = "205px";
 blackMaxSpan.style.fontSize = "0.8em";
 gameDiv.appendChild(blackMaxSpan);
 
@@ -1749,9 +1747,9 @@ blackBox.setAttribute("maxlength", 3);
 blackBox.setAttribute("value", "1");
 blackBox.style.position = "absolute";
 blackBox.style.left = "250px";
-blackBox.style.top = "100px";
+blackBox.style.top = "200px";
 blackBox.onchange = function(){
-	if (isNumber(blackBox.value) && (-40 < Math.floor(blackBox.value)) && (Math.floor(blackBox.value) <= 40)){
+	if (isNumber(blackBox.value) && (-40 < Math.floor(blackBox.value)) && (Math.floor(blackBox.value) <= 50)){
 		blackMaxAdv = Math.floor(blackBox.value);
 		blackMaxSpan.innerHTML = "Black is up at most " + blackMaxAdv + " points in material";
 		blackBox.value = blackMaxAdv;
