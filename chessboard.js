@@ -743,6 +743,9 @@ document.onmousedown = function(e){
 var turn = true;		//true is white
 var check = false;
 var checkmate = false;
+var stalemate = false;
+var draw = false;
+var gameOn = true;
 
 var computerPlaysBlack = true;
 var computerPlaysWhite = false;
@@ -751,7 +754,7 @@ function movePiece(square){
 	oldPiece = square.piece;
 	oldSquare = pickedUpPiece.square;
 	
-	var ep = pickedUpPiece.available[square.column - 1][square.row - 1] == Piece.EN_PASSANT;
+	var ep = (pickedUpPiece.available[square.column - 1][square.row - 1] == Piece.EN_PASSANT);
 	
 	promoted = false;
 	
@@ -878,10 +881,7 @@ function movePiece(square){
 					squares[pickedUpPiece.square.column][pickedUpPiece.square.row - 1].piece.epleft = true;
 			}
 			pickedUpPiece.hasMoved = true;
-			var tempCheck = (check ? true : false);
-			if (check)
-				tryCheckmate(Math.abs(pickedUpPiece.color - 1));
-			check = tempCheck;
+			checkEnd(Math.abs(pickedUpPiece.color - 1));
 			if (checkmate)
 				li.innerHTML += "#";
 			else if (check)
@@ -953,10 +953,7 @@ function capture(winner, loser, from, ep){
 	turn = (turn) ? false : true;
 	listValidMoves(Piece.WHITE);
 	listValidMoves(Piece.BLACK);
-	var tempCheck = (check ? true : false);
-	if (check)
-		tryCheckmate(Math.abs(winner.color - 1));
-	check = tempCheck;
+	checkEnd(Math.abs(winner.color - 1));
 	if (checkmate)
 		li.innerHTML += "#";
 	else if (check)
@@ -1037,7 +1034,6 @@ function finalize(color, tryCheck){
 				return false;
 			}
 			else if (tryCheck){
-				console.log("White is in check from the piece on " + String.fromCharCode(96 + node.contents.square.column) + node.contents.square.row);
 				check = true;
 			}					
 		}
@@ -1055,7 +1051,6 @@ function finalize(color, tryCheck){
 				return false;
 			}
 			else if (tryCheck){
-				console.log("Black is in check from the piece on " + String.fromCharCode(96 + node.contents.square.column) + node.contents.square.row);
 				check = true;
 			}
 		}
@@ -1065,23 +1060,42 @@ function finalize(color, tryCheck){
 	return true;
 }
 
-function tryCheckmate(color){
-	checkmate = false;
+var move = 1;
+
+function checkEnd(color){
 	if (color == Piece.WHITE){
 		listValidMoves(Piece.WHITE);
 		if (whiteMoves.head == null){
-			checkmate = true;
+			if (check)
+				checkmate = true;
+			else
+				stalemate = true;
 		}
 	}
 	else{
 		listValidMoves(Piece.BLACK);
 		if (blackMoves.head == null){
-			checkmate = true;
+			if (check)
+				checkmate = true;
+			else
+				stalemate = true;
 		}
 	}
-	if (checkmate){
+	
+	if (whitePieces.length <= 2 && blackPieces.length <= 2)
+		draw = true;									//This is totally wrong but here to test stuff.
+	
+	if (checkmate || stalemate || draw){
 		computerPlaysBlack = false;
 		computerPlaysWhite = false;
+		gameOn = false;
+		console.log("Game over" + checkmate + stalemate + draw);
+		if (checkmate)
+			console.log("Checkmate");
+		if (stalemate)
+			console.log("Stalemate");
+		if (draw)
+			console.log("Draw");
 	}
 }
 
