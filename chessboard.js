@@ -905,11 +905,25 @@ function movePiece(square){
 				li.innerHTML += "#";
 			else if (check)
 				li.innerHTML += "+";
-			pickedUpPiece.epleft = false;
-			pickedUpPiece.epright = false;
+			while (node != null){
+				if (node.contents.piece != null){
+					node.contents.piece.epleft = false;
+					node.contents.piece.epright = false;
+				}
+				node = node.next;
+			}
+			node = blackPieces.head;
+			while (node != null){
+				if (node.contents.piece != null){
+					node.contents.piece.epleft = false;
+					node.contents.piece.epright = false;
+				}
+				node = node.next;
+			}
 			listValidMoves(Piece.WHITE);
 			listValidMoves(Piece.BLACK);
 			(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
+			if (pickedUpPiece.color == Piece.BLACK) move++;
 			if (computerPlaysBlack && pickedUpPiece.color == Piece.WHITE)
 				computerMove();
 			else if (computerPlaysWhite && pickedUpPiece.color == Piece.BLACK)
@@ -981,9 +995,24 @@ function capture(winner, loser, from, ep){
 		li.innerHTML += "#";
 	else if (check)
 		li.innerHTML += "+";
-	pickedUpPiece.epleft = false;
-	pickedUpPiece.epright = false;
+	var node = whitePieces.head;
+	while (node != null){
+		if (node.contents.piece != null){
+			node.contents.piece.epleft = false;
+			node.contents.piece.epright = false;
+		}
+		node = node.next;
+	}
+	node = blackPieces.head;
+	while (node != null){
+		if (node.contents.piece != null){
+			node.contents.piece.epleft = false;
+			node.contents.piece.epright = false;
+		}
+		node = node.next;
+	}
 	(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
+	if (pickedUpPiece.color == Piece.BLACK) move++;
 	if (computerPlaysBlack && pickedUpPiece.color == Piece.WHITE)
 		computerMove();
 	else if (computerPlaysWhite && pickedUpPiece.color == Piece.BLACK)
@@ -1182,34 +1211,36 @@ function debugEPs(){
 }
 
 function computerMove(){
-	if (!turn){
-		listValidMoves(Piece.BLACK);
-		var randomMoveSteps = Math.floor(Math.random() * blackMoves.length);
-		var node = blackMoves.head;
-		if (node != null){
-			while (randomMoveSteps != 0){
-				node = node.next;
-				randomMoveSteps--;
+	if (!posGen || move <= movesToPlay){
+		if (!turn){	
+			listValidMoves(Piece.BLACK);
+			var randomMoveSteps = Math.floor(Math.random() * blackMoves.length);
+			var node = blackMoves.head;
+			if (node != null){
+				while (randomMoveSteps != 0){
+					node = node.next;
+					randomMoveSteps--;
+				}
+				pickedUpPiece = node.contents.piece;
+				movePiece(node.contents.square);
+				pickedUp = false;
+				pickedUpPiece = null;
 			}
-			pickedUpPiece = node.contents.piece;
-			movePiece(node.contents.square);
-			pickedUp = false;
-			pickedUpPiece = null;
 		}
-	}
-	else{
-		listValidMoves(Piece.WHITE);
-		var randomMoveSteps = Math.floor(Math.random() * whiteMoves.length);
-		var node = whiteMoves.head;
-		if (node != null){
-			while (randomMoveSteps != 0){
-				node = node.next;
-				randomMoveSteps--;
+		else{
+			listValidMoves(Piece.WHITE);
+			var randomMoveSteps = Math.floor(Math.random() * whiteMoves.length);
+			var node = whiteMoves.head;
+			if (node != null){
+				while (randomMoveSteps != 0){
+					node = node.next;
+					randomMoveSteps--;
+				}
+				pickedUpPiece = node.contents.piece;
+				movePiece(node.contents.square);
+				pickedUp = false;
+				pickedUpPiece = null;
 			}
-			pickedUpPiece = node.contents.piece;
-			movePiece(node.contents.square);
-			pickedUp = false;
-			pickedUpPiece = null;
 		}
 	}
 }
@@ -1548,6 +1579,155 @@ resetButton.setAttribute("width", "100px");
 resetButton.style.position = "absolute";
 resetButton.style.left = "950px";
 document.body.appendChild(resetButton);
+
+var gameDiv = document.createElement("div");
+gameDiv.style.width = "300px";
+gameDiv.style.height = "300px";
+gameDiv.style.backgroundColor = "rgb(200, 0, 150)";
+gameDiv.style.position = "absolute";
+gameDiv.style.left = "600px";
+gameDiv.style.top = "200px";
+document.body.appendChild(gameDiv);
+
+var movesToPlay = 10;
+var posGen = false;
+var whiteMaxAdv = 1;
+var blackMaxAdv = 1;
+
+var newGameButton = document.createElement("button");
+newGameButton.setAttribute("width", "200px");
+newGameButton.innerHTML = "New position after 10 moves";
+newGameButton.style.position = "absolute";
+newGameButton.style.left = "0px";
+newGameButton.style.top = "0px";
+newGameButton.onclick = function(){
+	do{
+		resetButton.click();
+		posGen = true;
+		computerPlaysWhite = true;
+		computerPlaysBlack = true;
+		while (move <= movesToPlay){
+			computerMove();
+			console.log(move + ", " + movesToPlay);
+		}
+		computerPlaysWhite = false;
+		computerPlaysBlack = false;
+		posGen = false;
+	} while (getBoardValue() > whiteMaxAdv)	
+};
+gameDiv.appendChild(newGameButton);
+
+function getBoardValue(){
+	var value = 0;
+	var node = whitePieces.head;
+	while (node != null){
+		var piece = node.contents.type;
+		switch(piece){
+		case Piece.PAWN:
+			value += 1;
+			break;
+		case Piece.KNIGHT:
+			value += 3;
+			break;
+		case Piece.BISHOP:
+			value += 3;
+			break;
+		case Piece.ROOK:
+			value += 5;
+			break;
+		case Piece.QUEEN:
+			value += 10;
+			break;
+		}
+	node = node.next;
+	}
+	var node = blackPieces.head;
+	while (node != null){
+		var piece = node.contents.type;
+		switch(piece){
+		case Piece.PAWN:
+			value -= 1;
+			break;
+		case Piece.KNIGHT:
+			value -= 3;
+			break;
+		case Piece.BISHOP:
+			value -= 3;
+			break;
+		case Piece.ROOK:
+			value -= 5;
+			break;
+		case Piece.QUEEN:
+			value -= 10;
+			break;
+		}
+	node = node.next;
+	}
+	
+	return value;
+}
+
+var movesBox = document.createElement("input");
+movesBox.setAttribute("type", "text");
+movesBox.setAttribute("size", 3);
+movesBox.setAttribute("maxlength", 3);
+movesBox.setAttribute("value", "10");
+movesBox.style.position = "absolute";
+movesBox.style.left = "220px";
+movesBox.style.top = "0px";
+movesBox.onchange = function(){
+	if (isNumber(movesBox.value) && (0 < Math.floor(movesBox.value)) && (Math.floor(movesBox.value) <= 999)){
+		movesToPlay = Math.floor(movesBox.value);
+		newGameButton.innerHTML = "New position after " + movesToPlay + " moves";
+		movesBox.value = movesToPlay;
+		movesBox.blur();
+	}
+	else
+		movesBox.value = movesToPlay;
+};
+movesBox.onfocus = function(){movesBox.setAttribute("value", "");};
+gameDiv.appendChild(movesBox);
+
+var whiteMax = document.createElement("input");
+whiteMax.setAttribute("type", "checkbox");
+whiteMax.setAttribute("checked", false);
+whiteMax.style.position = "absolute";
+whiteMax.style.left = "0px";
+whiteMax.style.top = "50px";
+gameDiv.appendChild(whiteMax);
+var whiteMaxSpan = document.createElement("span");
+whiteMaxSpan.innerHTML = "White is up at most 1 points in material";
+whiteMaxSpan.style.position = "absolute";
+whiteMaxSpan.style.left = "20px";
+whiteMaxSpan.style.top = "55px";
+whiteMaxSpan.style.fontSize = "0.8em";
+gameDiv.appendChild(whiteMaxSpan);
+
+var whiteBox = document.createElement("input");
+whiteBox.setAttribute("type", "text");
+whiteBox.setAttribute("size", 3);
+whiteBox.setAttribute("maxlength", 3);
+whiteBox.setAttribute("value", "1");
+whiteBox.style.position = "absolute";
+whiteBox.style.left = "250px";
+whiteBox.style.top = "50px";
+whiteBox.onchange = function(){
+	if (isNumber(whiteBox.value) && (-40 < Math.floor(whiteBox.value)) && (Math.floor(whiteBox.value) <= 40)){
+		whiteMaxAdv = Math.floor(whiteBox.value);
+		whiteMaxSpan.innerHTML = "White is up at most " + whiteMaxAdv + " points in material";
+		whiteBox.value = whiteMaxAdv;
+		whiteBox.blur();
+	}
+	else
+		whiteBox.value = whiteMaxAdv;
+};
+whiteBox.onfocus = function(){whiteBox.setAttribute("value", "");};
+gameDiv.appendChild(whiteBox);
+
+function isNumber(n) {				//Credit to "CMS" on StackOverflow
+	  return !isNaN(parseFloat(n)) && isFinite(n);
+	}
+
 
 /*  Initialize all the image elements for the pieces, put the pieces in them, and set the board up properly */
 
