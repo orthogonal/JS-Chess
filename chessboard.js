@@ -1,18 +1,42 @@
+/*==========================*/
 /*  Piece class declaration */
+/*==========================*/
 
 function Piece(color, type, obj, square){
+	
+	/*  type is what kind of piece it is (a constant defined later), and color is white or black (also constants defined later) */
 	
 	this.type = type;
 	this.color = color;
 	
+	/*  hasMoved is used, for instance, to check if the king and rook can castle.  */
+	
 	this.hasMoved = false;
+	
+	/*  square is the square it's on.  square.piece is set in this constructor because square is defined before piece. */
 	
 	this.square = square;
 	square.piece = this;
 	
+	/*  representation is the actual image on the board */
+	
 	this.representation = obj;
 	
+	/*  epleft and epright are true if the piece is a pawn that can capture via en passant on its left or right */
+	
+	this.epleft = false;
+	this.epright = false;
+	
+	/* the available array holds a key value on each of the 64 squares indicating how the piece relates to that square.
+	 * these relations are defined in constants later on.  
+	 * updateMoves is a huge function that sets up this array properly.
+	 */
+	
 	this.updateMoves = function(){
+		
+		/*  By default, the piece can not go anywhere.  If it can go to some squares, or interacts with them in an abnormal way, 
+		 * that will be defined below.
+		 */
 		
 		for (var i = 0; i < 8; i++){
 			for (var j = 0; j < 8; j++){
@@ -25,19 +49,19 @@ function Piece(color, type, obj, square){
 			for (var i = 0; i < 8; i++){
 				for (var j = 0; j < 8; j++){
 					var testSquare = squares[i][j];
-					var row = j + 1;
-					var col = i + 1;
+					var row = j + 1;					//Row is the actual row it's on, not the array index.  Same for column. 
+					var col = i + 1;					//This is for readability.
 					if (this.color == Piece.WHITE){
-						if (this.square.row == 2){									//Second rank:  One or two up
-							if (row == 3 || (row == 4 && squares[i][j - 1].piece == null))
+						if (this.square.row == 2){		//If the pawn is on the second rank, then it can go up two squares on its first move.
+							if (row == 3 || (row == 4 && squares[i][j - 1].piece == null))	//It can only go up two if the square up one is clear.
 								if (this.square.column == col)
 									if (testSquare.piece == null )
 										this.available[i][j] = Piece.MOVE_ONLY;
 									else
 										this.available[i][j] = Piece.NO_MOVE;
 								else
-									if (Math.abs(this.square.column - col) == 1		//Check second rank caps
-									&& testSquare.piece != null) 
+									if (Math.abs(this.square.column - col) == 1		//Check captures/protections on the second rank.
+									&& testSquare.piece != null && row == 3) 		//These are only valid for pieces on the third row.
 										if (testSquare.piece.color != this.color)
 											this.available[i][j] = Piece.CAPTURE;
 										else
@@ -48,13 +72,13 @@ function Piece(color, type, obj, square){
 								this.available[i][j] = Piece.NO_MOVE;
 						}
 						else{
-							if (row == this.square.row+ 1)							//Other rank:  One up
+							if (row == this.square.row + 1)							//If it is on any other rank, it can only move one space up.
 								if (this.square.column == col)
 									if (testSquare.piece == null)
 										this.available[i][j] = Piece.MOVE_ONLY;
 									else
 										this.available[i][j] = Piece.NO_MOVE;			
-								else													//Check other rank caps
+								else													//Check captures on the adjacent ranks.
 									if (Math.abs(this.square.column - col) == 1
 									&& testSquare.piece != null)
 										if (testSquare.piece.color != this.color)
@@ -76,7 +100,7 @@ function Piece(color, type, obj, square){
 									else
 										this.available[i][j] = Piece.NO_MOVE;
 								else
-									if (Math.abs(this.square.column - col) == 1		//Check seventh rank caps
+									if (Math.abs(this.square.column - col) == 1		//Check seventh rank captures
 									&& testSquare.piece != null) 
 										if (testSquare.piece.color != this.color)
 											this.available[i][j] = Piece.CAPTURE;
@@ -96,7 +120,7 @@ function Piece(color, type, obj, square){
 										this.available[i][j] = Piece.NO_MOVE;			
 								else													//Check other rank caps
 									if (Math.abs(this.square.column - col) == 1
-									&& testSquare.piece != null)
+									&& testSquare.piece != null && row == 6)
 										if (testSquare.piece.color != this.color)
 											this.available[i][j] = Piece.CAPTURE;
 										else
@@ -109,6 +133,20 @@ function Piece(color, type, obj, square){
 					}
 				}
 			}
+			/*  Now check for en passant.  The rule for en passant is that:
+			 *  if it can en passant to the left, and 
+			 */
+			if (this.epleft && this.square.column != 1){			//The != is there because this gets run through when possible moves
+				if (this.color == Piece.WHITE)						//are calculated.  So EP will still be true, but the piece will hypothetically
+					this.available[this.square.column - 2][this.square.row] = Piece.EN_PASSANT;		//be on the ep-ing square.
+				else
+					this.available[this.square.column - 2][this.square.row - 2] = Piece.EN_PASSANT;
+			}
+			if (this.epright && this.square.column != 8)
+				if (this.color == Piece.WHITE)
+					this.available[this.square.column][this.square.row] = Piece.EN_PASSANT;
+				else
+					this.available[this.square.column][this.square.row - 2] = Piece.EN_PASSANT;
 			break;
 			
 		case Piece.KNIGHT:
@@ -584,27 +622,43 @@ function LLNode(prev, contents, next){
 	this.next = next;
 }
 
-function LinkedList(head){
-	this.head = new LLNode(null, head, null);
-	this.tail = this.head;
-	this.length = 1;
+function LinkedList(){
+	this.head = null;
+	this.tail = null;
+	this.length = 0;
 	
 	this.add = function(piece){
-		node = new LLNode(this.tail, piece, null);
-		this.tail.next = node;
-		this.tail = node;
+		node = new LLNode(null, piece, null);
+		if (this.length == 0){
+			this.head = node;
+			this.tail = node;
+		}
+		else{
+			this.tail.next = node;
+			node.prev = this.tail;
+			this.tail = node;
+		}
 		this.length++;
 	};
 	
 	this.remove = function(piece){
 		node = this.head;
-		do{
-			if (node.contents == piece){
-				node.prev.next = node.next;
-				node.next.prev = node.prev;
-			}
-			node = node.next;
-		} while (node != null)
+		if (node != null){
+			do{
+				if (node.contents == piece){
+					if (node.prev != null)
+						node.prev.next = node.next;
+					else
+						this.head = node.next;
+					if (node.next != null)
+						node.next.prev = node.prev;
+					else
+						this.tail = node.prev;
+					this.length--;
+				}
+				node = node.next;
+			} while (node != null)
+		}
 	};
 }
 
@@ -667,6 +721,8 @@ function movePiece(square){
 	oldPiece = square.piece;
 	oldSquare = pickedUpPiece.square;
 	
+	var ep = pickedUpPiece.available[square.column - 1][square.row - 1] == Piece.EN_PASSANT;
+	
 	if (checkValidMove(pickedUpPiece, square, true) == true){
 		pickedUpPiece.square = oldSquare;
 		square.piece = oldPiece;
@@ -674,15 +730,18 @@ function movePiece(square){
 		pickedUpPiece.square.piece = null;
 		pickedUpPiece.square = square;
 		
-		if (pickedUpPiece.square.piece != null){
-			if (pickedUpPiece.square.piece.color == pickedUpPiece.color){
+		
+		if (pickedUpPiece.square.piece != null || ep){
+			if (pickedUpPiece.square.piece != null && pickedUpPiece.square.piece.color == pickedUpPiece.color){
 				pickedUpPiece.square = oldSquare;
 				pickedUpPiece.square.piece = pickedUpPiece;
 				pickedUpPiece.representation.style.left = pickedUpPiece.square.coordinates.x + "px";
 				pickedUpPiece.representation.style.top = pickedUpPiece.square.coordinates.y + "px";
 			}
+			else if (ep)
+				capture (pickedUpPiece, squares[pickedUpPiece.square.column - 1][pickedUpPiece.square.row - ((pickedUpPiece.color == Piece.WHITE) ? 2 : 0)].piece, oldSquare, true);
 			else
-				capture(pickedUpPiece, pickedUpPiece.square.piece, oldSquare);
+				capture(pickedUpPiece, pickedUpPiece.square.piece, oldSquare, false);
 		}
 		else{
 			var li = document.createElement("li");
@@ -756,6 +815,18 @@ function movePiece(square){
 				li.innerHTML += String.fromCharCode(96 + pickedUpPiece.square.column);
 				li.innerHTML += pickedUpPiece.square.row;
 			}
+			if (pickedUpPiece.type == Piece.PAWN && Math.abs(pickedUpPiece.square.row - oldSquare.row) != 1){
+				if ((pickedUpPiece.square.column > 1) 
+						&& squares[pickedUpPiece.square.column - 2][pickedUpPiece.square.row - 1].piece != null
+						&& squares[pickedUpPiece.square.column - 2][pickedUpPiece.square.row - 1].piece.color != pickedUpPiece.color
+						&& squares[pickedUpPiece.square.column - 2][pickedUpPiece.square.row - 1].piece.type == Piece.PAWN)
+					squares[pickedUpPiece.square.column - 2][pickedUpPiece.square.row - 1].piece.epright = true;
+				if ((pickedUpPiece.square.column < 7) 
+						&& squares[pickedUpPiece.square.column][pickedUpPiece.square.row - 1].piece != null
+						&& squares[pickedUpPiece.square.column][pickedUpPiece.square.row - 1].piece.color != pickedUpPiece.color 
+						&& squares[pickedUpPiece.square.column][pickedUpPiece.square.row - 1].piece.type == Piece.PAWN)
+					squares[pickedUpPiece.square.column][pickedUpPiece.square.row - 1].piece.epleft = true;
+			}
 			pickedUpPiece.hasMoved = true;
 			var tempCheck = (check ? true : false);
 			if (check)
@@ -768,7 +839,6 @@ function movePiece(square){
 			listValidMoves(Piece.WHITE);
 			listValidMoves(Piece.BLACK);
 			(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
-			printTestTable(bk);
 		}
 	}
 	else{
@@ -779,7 +849,7 @@ function movePiece(square){
 	}
 }
 
-function capture(winner, loser, from){
+function capture(winner, loser, from, ep){
 	var li = document.createElement("li");
 	switch (winner.type){
 	case 0:
@@ -805,6 +875,8 @@ function capture(winner, loser, from){
 	li.innerHTML += "x";
 	li.innerHTML += String.fromCharCode(96 + loser.square.column);
 	li.innerHTML += loser.square.row;
+	if (ep)
+		li.innerHTML += "ep";
 	loser.square.piece = null;
 	loser.square = null;
 	document.body.removeChild(loser.representation);
@@ -828,7 +900,6 @@ function capture(winner, loser, from){
 	else if (check)
 		li.innerHTML += "+";
 	(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
-	printTestTable(bk);
 }
 
 function checkValidMove(piece, square, tryCheck){
@@ -865,11 +936,19 @@ function finalize(color, tryCheck){
 	var node = whitePieces.head;
 	while (node != null){
 		node.contents.updateMoves();
+		if (color == Piece.WHITE && node.contents.piece != null){
+			node.contents.piece.epleft = false;
+			node.contents.piece.epright = false;
+		}
 		node = node.next;
 	}
 	node = blackPieces.head;
 	while (node != null){
 		node.contents.updateMoves();
+		if (color == Piece.BLACK && node.contents.piece != null){
+			node.contents.piece.epleft = false;
+			node.contents.piece.epright = false;
+		}
 		node = node.next;
 	}
 	
@@ -924,13 +1003,13 @@ function tryCheckmate(color){
 	checkmate = false;
 	if (color == Piece.WHITE){
 		listValidMoves(Piece.WHITE);
-		if (whiteMoves.head.contents == null){
+		if (whiteMoves.head == null){
 			checkmate = true;
 		}
 	}
 	else{
 		listValidMoves(Piece.BLACK);
-		if (blackMoves.head.contents == null){
+		if (blackMoves.head == null){
 			checkmate = true;
 		}
 	}
@@ -969,19 +1048,19 @@ board.style.top = "0px";
 document.body.appendChild(board);
 
 var moves_container = document.createElement("div");
-moves_container.setAttribute("width", "150px");
+moves_container.setAttribute("width", "200px");
 moves_container.style.position = "absolute";
 moves_container.style.left = "400px";
 moves_container.style.top = "0px";
 var whiteList = document.createElement("ol");
 whiteList.style.position = "absolute";
 whiteList.style.left = "0px";
-whiteList.setAttribute("width", "75px");
+whiteList.setAttribute("width", "100px");
 var blackList = document.createElement("ul");
 blackList.style.listStyleType = "none";
 blackList.style.position = "absolute";
-blackList.style.left = "75px";
-blackList.setAttribute("width", "75px");
+blackList.style.left = "100px";
+blackList.setAttribute("width", "100px");
 
 moves_container.appendChild(whiteList);
 moves_container.appendChild(blackList);
@@ -1249,9 +1328,10 @@ g8.piece = bn2;
 var br2 = new Piece(Piece.BLACK, Piece.ROOK, img_br2, h8);
 h8.piece = br2;
 
-var whitePieces = new LinkedList(wp1);
-var blackPieces = new LinkedList(bp1);
+var whitePieces = new LinkedList();
+var blackPieces = new LinkedList();
 
+whitePieces.add(wp1);
 whitePieces.add(wp2);
 whitePieces.add(wp3);
 whitePieces.add(wp4);
@@ -1268,6 +1348,7 @@ whitePieces.add(wb2);
 whitePieces.add(wq);
 whitePieces.add(wk);
 
+blackPieces.add(bp1);
 blackPieces.add(bp2);
 blackPieces.add(bp3);
 blackPieces.add(bp4);
@@ -1300,7 +1381,7 @@ function listValidMoves(color){
 					oldPiece = squares[i][j].piece;
 					oldSquare = pieceNode.contents.square;
 					if (checkValidMove(pieceNode.contents, squares[i][j], false)){
-						if (window.whiteMoves.head.contents == null){
+						if (window.whiteMoves.head == null){
 							window.whiteMoves.head = new LLNode(null, {piece: pieceNode.contents, square: squares[i][j]}, null);
 							window.whiteMoves.tail = window.whiteMoves.head;
 							window.whiteMoves.length = 1;
@@ -1325,7 +1406,7 @@ function listValidMoves(color){
 					oldPiece = squares[i][j].piece;
 					oldSquare = pieceNode.contents.square;
 					if (checkValidMove(pieceNode.contents, squares[i][j], false)){
-						if (window.blackMoves.head.contents == null){
+						if (window.blackMoves.head == null){
 							window.blackMoves.head = new LLNode(null, {piece: pieceNode.contents, square: squares[i][j]}, null);
 							window.blackMoves.tail = window.blackMoves.head;
 							window.blackMoves.length = 1;
