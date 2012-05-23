@@ -50,7 +50,7 @@ function Piece(color, type, obj, square){
 				for (var j = 0; j < 8; j++){
 					var testSquare = squares[i][j];
 					var row = j + 1;					//Row is the actual row it's on, not the array index.  Same for column. 
-					var col = i + 1;					//This is for readability.
+					var col = i + 1;					//This is for readability.  Also, column and row on square are this way.
 					if (this.color == Piece.WHITE){
 						if (this.square.row == 2){		//If the pawn is on the second rank, then it can go up two squares on its first move.
 							if (row == 3 || (row == 4 && squares[i][j - 1].piece == null))	//It can only go up two if the square up one is clear.
@@ -101,7 +101,7 @@ function Piece(color, type, obj, square){
 										this.available[i][j] = Piece.NO_MOVE;
 								else
 									if (Math.abs(this.square.column - col) == 1		//Check seventh rank captures
-									&& testSquare.piece != null) 
+									&& testSquare.piece != null && row == 6) 
 										if (testSquare.piece.color != this.color)
 											this.available[i][j] = Piece.CAPTURE;
 										else
@@ -120,7 +120,7 @@ function Piece(color, type, obj, square){
 										this.available[i][j] = Piece.NO_MOVE;			
 								else													//Check other rank caps
 									if (Math.abs(this.square.column - col) == 1
-									&& testSquare.piece != null && row == 6)
+									&& testSquare.piece != null)
 										if (testSquare.piece.color != this.color)
 											this.available[i][j] = Piece.CAPTURE;
 										else
@@ -133,9 +133,7 @@ function Piece(color, type, obj, square){
 					}
 				}
 			}
-			/*  Now check for en passant.  The rule for en passant is that:
-			 *  if it can en passant to the left, and 
-			 */
+			/*  Now check for en passant. */
 			if (this.epleft && this.square.column != 1){			//The != is there because this gets run through when possible moves
 				if (this.color == Piece.WHITE)						//are calculated.  So EP will still be true, but the piece will hypothetically
 					this.available[this.square.column - 2][this.square.row] = Piece.EN_PASSANT;		//be on the ep-ing square.
@@ -149,6 +147,11 @@ function Piece(color, type, obj, square){
 					this.available[this.square.column][this.square.row - 2] = Piece.EN_PASSANT;
 			break;
 			
+		/*  For knights, the rule is that if a square is three squares away but not in a straight line,
+		 *  they can go to it (I made this up and it's a confusing way to think about it but it works).  
+		 *  Knights can jump over other pieces so we don't need to worry about checking if there is a piece
+		 *  in the way.
+		 */
 		case Piece.KNIGHT:
 			for (var i = 1; i <= 8; i++){
 				for (var j = 1; j <= 8; j++){
@@ -167,6 +170,9 @@ function Piece(color, type, obj, square){
 			}
 			break;
 			
+		/*  For bishops, rooks and queens, check along the straight line.  After running into a piece, go to the next line.
+		 *  This is tedious but I think it has to be the best way to do it.
+		 */
 		case Piece.BISHOP:
 			var bi = this.square.column;
 			var bj = this.square.row;
@@ -546,7 +552,12 @@ function Piece(color, type, obj, square){
 				qj--;
 			}
 			break;
-			
+		
+		/*  For the king, we're checking all the squares in the 3 x 3 box that surrounds it.
+		 *  This results in the king "protecting" itself, but saves space.
+		 *  We also check for castling by seeing if both the king and rook have not moved and the squares are clear.
+		 *  At this point, we don't look to see if the squares are not in check, but that comes into play later.
+		 */
 		case Piece.KING:		
 			for (var i = -1; i <= 1; i++){
 				for (var j = -1; j <= 1; j++){
@@ -576,11 +587,15 @@ function Piece(color, type, obj, square){
 		}
 	};
 	
+	/*  This is the best way to declare an 8 x 8 2d array.  */
 	this.available = (function(a){
 		while(a.push([]) < 9); 
 		return a;
 		})([]);
 }
+
+/*  A bunch of constants */
+
 Piece.WHITE = 0;
 Piece.BLACK = 1;
 
@@ -600,7 +615,10 @@ Piece.QUEENSIDE_CASTLE = 4;
 Piece.EN_PASSANT = 5;
 
 
+
+/*===========================*/
 /*  Square class declaration */
+/*===========================*/
 
 function Square(column, row){
 	this.column = column;
@@ -614,7 +632,11 @@ function Square(column, row){
 	};
 }
 
-/* My implementation of a doubly linked list */
+
+
+/*======================*/
+/* A doubly linked list */
+/*======================*/
 
 function LLNode(prev, contents, next){
 	this.prev = prev;
@@ -662,7 +684,12 @@ function LinkedList(){
 	};
 }
 
+
+
+
+/*===========================================*/
 /*  Code for drag-and-dropping pieces around */
+/*===========================================*/
 
 var pickedUp = false;
 var pickedUpPiece = null;
@@ -723,6 +750,19 @@ function movePiece(square){
 	
 	var ep = pickedUpPiece.available[square.column - 1][square.row - 1] == Piece.EN_PASSANT;
 	
+	promoted = false;
+	
+	if (pickedUpPiece.type == Piece.PAWN 
+			&& ((pickedUpPiece.square.column == square.column) ? square.piece == null : square.piece != null)		//Pawn moves != queen moves
+			&& ((pickedUpPiece.color == Piece.WHITE) ? square.row == 8 : square.row == 1)){	//Promotion
+		promoted = true;
+		pickedUpPiece.type = 4;
+		if (pickedUpPiece.color == Piece.WHITE)
+			pickedUpPiece.representation.setAttribute("src", "images/wqueen.png");
+		else
+			pickedUpPiece.representation.setAttribute("src", "images/bqueen.png");
+	}
+	
 	if (checkValidMove(pickedUpPiece, square, true) == true){
 		pickedUpPiece.square = oldSquare;
 		square.piece = oldPiece;
@@ -737,6 +777,13 @@ function movePiece(square){
 				pickedUpPiece.square.piece = pickedUpPiece;
 				pickedUpPiece.representation.style.left = pickedUpPiece.square.coordinates.x + "px";
 				pickedUpPiece.representation.style.top = pickedUpPiece.square.coordinates.y + "px";
+				if (promoted){
+					pickedUpPiece.type = 0;
+					if (pickedUpPiece.color == Piece.WHITE)
+						pickedUpPiece.representation.setAttribute("src", "images/wpawn.png");
+					else
+						pickedUpPiece.representation.setAttribute("src", "images/bpawn.png");
+				}
 			}
 			else if (ep)
 				capture (pickedUpPiece, squares[pickedUpPiece.square.column - 1][pickedUpPiece.square.row - ((pickedUpPiece.color == Piece.WHITE) ? 2 : 0)].piece, oldSquare, true);
@@ -846,6 +893,13 @@ function movePiece(square){
 		pickedUpPiece.square.piece = pickedUpPiece;
 		pickedUpPiece.representation.style.left = pickedUpPiece.square.coordinates.x + "px";
 		pickedUpPiece.representation.style.top = pickedUpPiece.square.coordinates.y + "px";
+		if (promoted){
+			pickedUpPiece.type = 0;
+			if (pickedUpPiece.color == Piece.WHITE)
+				pickedUpPiece.representation.setAttribute("src", "images/wpawn.png");
+			else
+				pickedUpPiece.representation.setAttribute("src", "images/bpawn.png");
+		}
 	}
 }
 
