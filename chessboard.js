@@ -134,7 +134,7 @@ function Piece(color, type, obj, square){
 				}
 			}
 			/*  Now check for en passant. */
-			if (this.epleft && this.square.column != 1){			//The != is there because this gets run through when possible moves
+			/*if (this.epleft && this.square.column != 1){			//The != is there because this gets run through when possible moves
 				if (this.color == Piece.WHITE)						//are calculated.  So EP will still be true, but the piece will hypothetically
 					this.available[this.square.column - 2][this.square.row] = Piece.EN_PASSANT;		//be on the ep-ing square.
 				else
@@ -144,7 +144,7 @@ function Piece(color, type, obj, square){
 				if (this.color == Piece.WHITE)
 					this.available[this.square.column][this.square.row] = Piece.EN_PASSANT;
 				else
-					this.available[this.square.column][this.square.row - 2] = Piece.EN_PASSANT;
+					this.available[this.square.column][this.square.row - 2] = Piece.EN_PASSANT;*/
 			break;
 			
 		/*  For knights, the rule is that if a square is three squares away but not in a straight line,
@@ -777,7 +777,7 @@ function movePiece(square){
 		pickedUpPiece.square = square;
 		
 		
-		if (pickedUpPiece.square.piece != null || ep){
+		if ((pickedUpPiece.square.piece != null) || ep){
 			if (pickedUpPiece.square.piece != null && pickedUpPiece.square.piece.color == pickedUpPiece.color){
 				pickedUpPiece.square = oldSquare;
 				pickedUpPiece.square.piece = pickedUpPiece;
@@ -912,6 +912,7 @@ function movePiece(square){
 }
 
 function capture(winner, loser, from, ep){
+	if (loser == null) console.log(from + " " + ep);
 	var li = document.createElement("li");
 	switch (winner.type){
 	case 0:
