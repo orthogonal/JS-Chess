@@ -134,7 +134,7 @@ function Piece(color, type, obj, square){
 				}
 			}
 			/*  Now check for en passant. */
-			/*if (this.epleft && this.square.column != 1){			//The != is there because this gets run through when possible moves
+			if (this.epleft && this.square.column != 1){			//The != is there because this gets run through when possible moves
 				if (this.color == Piece.WHITE)						//are calculated.  So EP will still be true, but the piece will hypothetically
 					this.available[this.square.column - 2][this.square.row] = Piece.EN_PASSANT;		//be on the ep-ing square.
 				else
@@ -144,7 +144,7 @@ function Piece(color, type, obj, square){
 				if (this.color == Piece.WHITE)
 					this.available[this.square.column][this.square.row] = Piece.EN_PASSANT;
 				else
-					this.available[this.square.column][this.square.row - 2] = Piece.EN_PASSANT;*/
+					this.available[this.square.column][this.square.row - 2] = Piece.EN_PASSANT;
 			break;
 			
 		/*  For knights, the rule is that if a square is three squares away but not in a straight line,
@@ -886,6 +886,8 @@ function movePiece(square){
 				li.innerHTML += "#";
 			else if (check)
 				li.innerHTML += "+";
+			pickedUpPiece.epleft = false;
+			pickedUpPiece.epright = false;
 			listValidMoves(Piece.WHITE);
 			listValidMoves(Piece.BLACK);
 			(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
@@ -959,6 +961,8 @@ function capture(winner, loser, from, ep){
 		li.innerHTML += "#";
 	else if (check)
 		li.innerHTML += "+";
+	pickedUpPiece.epleft = false;
+	pickedUpPiece.epright = false;
 	(pickedUpPiece.color == Piece.WHITE) ? whiteList.appendChild(li) : blackList.appendChild(li);
 	if (computerPlaysBlack && pickedUpPiece.color == Piece.WHITE)
 		computerMove();
@@ -1128,6 +1132,32 @@ function checkEnd(color){
 function printTestTable(piece){
 	for (var i = 7; i >= 0; i--){
 		console.log(piece.available[0][i] + " " + piece.available[1][i] + " " + piece.available[2][i] + " " + piece.available[3][i] + " " + piece.available[4][i] + " " + piece.available[5][i] + " " + piece.available[6][i] + " " + piece.available[7][i]);
+	}
+}
+
+function printBoard(){
+	for (var i = 7; i >= 0; i--){
+		console.log(  ((squares[0][i].piece != null) ? squares[0][i].piece.type : "_") + 
+				" " + ((squares[1][i].piece != null) ? squares[1][i].piece.type : "_") + 
+				" " + ((squares[2][i].piece != null) ? squares[2][i].piece.type : "_") + 
+				" " + ((squares[3][i].piece != null) ? squares[3][i].piece.type : "_") +
+				" " + ((squares[4][i].piece != null) ? squares[4][i].piece.type : "_") +
+				" " + ((squares[5][i].piece != null) ? squares[5][i].piece.type : "_") +
+				" " + ((squares[6][i].piece != null) ? squares[6][i].piece.type : "_") +
+				" " + ((squares[7][i].piece != null) ? squares[7][i].piece.type : "_"));
+	}
+}
+
+function debugEPs(){
+	var node = blackPieces.head;
+	while (node != null){
+		console.log(String.fromCharCode(96 + node.contents.square.column) + node.contents.square.row + " " + node.contents.epleft + " " + node.contents.epright);
+		node = node.next;
+	}
+	var node = whitePieces.head;
+	while (node != null){
+		console.log(String.fromCharCode(96 + node.contents.square.column) + node.contents.square.row + " " + node.contents.epleft + " " + node.contents.epright);
+		node = node.next;
 	}
 }
 
