@@ -805,18 +805,18 @@ function movePiece(square){
 			if (!pickedUpPiece.hasMoved && pickedUpPiece.type == Piece.KING && (pickedUpPiece.square.column == 7 || pickedUpPiece.square.column == 3)){
 				if (pickedUpPiece.square.column == 3){			//Queenside Castle
 					if (pickedUpPiece.color == Piece.WHITE){
-						wr1.square.pickedUpPiece = null;
+						wr1.square.piece = null;
 						wr1.square = squares[3][0];
-						wr1.square.pickedUpPiece = wr1;
+						wr1.square.piece = wr1;
 						wr1.hasMoved = true;
 						wr1.representation.style.left = wr1.square.coordinates.x + "px";
 						wr1.representation.style.top = wr1.square.coordinates.y + "px";
 						li.innerHTML = "0-0-0";
 					}
 					else if (pickedUpPiece.color == Piece.BLACK){
-						br1.square.pickedUpPiece = null;
+						br1.square.piece = null;
 						br1.square = squares[3][7];
-						br1.square.pickedUpPiece = br1;
+						br1.square.piece = br1;
 						br1.hasMoved = true;
 						br1.representation.style.left = br1.square.coordinates.x + "px";
 						br1.representation.style.top = br1.square.coordinates.y + "px";
@@ -825,18 +825,18 @@ function movePiece(square){
 				}
 				if (pickedUpPiece.square.column == 7){			//Kingside Castle
 					if (pickedUpPiece.color == Piece.WHITE){
-						wr2.square.pickedUpPiece = null;
+						wr2.square.piece = null;
 						wr2.square = squares[5][0];
-						wr2.square.pickedUpPiece = wr2;
+						wr2.square.piece = wr2;
 						wr2.hasMoved = true;
 						wr2.representation.style.left = wr2.square.coordinates.x + "px";
 						wr2.representation.style.top = wr2.square.coordinates.y + "px";
 						li.innerHTML = "0-0";
 					}
 					else if (pickedUpPiece.color == Piece.BLACK){
-						br2.square.pickedUpPiece = null;
+						br2.square.piece = null;
 						br2.square = squares[5][7];
-						br2.square.pickedUpPiece = br2;
+						br2.square.piece = br2;
 						br2.hasMoved = true;
 						br2.representation.style.left = br2.square.coordinates.x + "px";
 						br2.representation.style.top = br2.square.coordinates.y + "px";
