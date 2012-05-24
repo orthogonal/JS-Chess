@@ -994,7 +994,7 @@ function capture(winner, loser, from, ep){
 	newMoveString += String.fromCharCode(96 + loser.square.column);
 	newMoveString += loser.square.row;
 	if (ep)
-		newMoveString += "e.p.";
+		newMoveString += " e.p.";
 	loser.square.piece = null;
 	loser.square = null;
 	document.body.removeChild(loser.representation);
@@ -1307,10 +1307,35 @@ var moveListDiv = document.createElement("div");
 moveListDiv.setAttribute("width", "200px");
 moveListDiv.style.position = "absolute";
 moveListDiv.style.left = "410px";
-moveListDiv.style.top = "0px";
 document.body.appendChild(moveListDiv);
 var moveList = document.createElement("p");
+moveList.style.top = "0px";
+moveList.style.font = "14px 'American Typewriter Condensed Light', Tacoma, Arial, sans-serif";
 moveListDiv.appendChild(moveList);
+
+var instrDiv = document.createElement("div");
+instrDiv.style.width = "630px";
+instrDiv.style.height = "200px";
+instrDiv.style.position = "absolute";
+instrDiv.style.left = "620px";
+document.body.appendChild(instrDiv);
+var instrP = document.createElement("p");
+instrP.style.width = "630px";
+instrP.style.font = "11px 'American Typewriter Condensed Light', Tacoma, Arial, sans-serif";
+instrP.style.textShadow = "0px 0px 0px #555";
+instrDiv.appendChild(instrP);
+instrP.innerHTML = "INSTRUCTIONS<br />" + 
+					"This board can be used to play against a friend or to set up a position by turning both computers off.<br />" +
+					"The computers make random moves, so turn one on to play against a random-move-making opponent.<br />" +
+					"Press 'Full Game' (or turn both computers on) to make the computers generate a completely random chess game.<br />" +
+					"<br />This web page can be used to generate random positions for chess games, creating a fun way to avoid opening theory.<br />" +
+					"Set the number of random moves for each side to be played to generate the starting position and press 'New Position' to generate.<br />" +
+					"To limit the advantage that one side can have, use the two counters at the bottom and the checkboxes.<br />" +
+					"For example, if white can have at most a pawn advantage, set that counter to 1.  To not care, turn it off or set it to 40.<br />" +
+					"These counters can go negative to force one side to have a disadvantage.<br />" +
+					"For example, set black's counter to -3 to state that black must have a disadvantage of at least three pawns.<br />" +
+					"The chess engine on this web page does not respect the 50 move rule or threefold repetition, and always promotes to a queen.<br />" + 
+					"<br />By Andrew Latham, May 2012";
 
 var gameDiv = document.createElement("div");
 gameDiv.style.width = "300px";
@@ -1318,7 +1343,7 @@ gameDiv.style.height = "250px";
 gameDiv.style.border = "3px solid black";
 gameDiv.style.position = "absolute";
 gameDiv.style.left = "620px";
-gameDiv.style.top = "200px";
+gameDiv.style.top = "250px";
 document.body.appendChild(gameDiv);
 
 var blackButton = document.createElement("button");
@@ -1727,7 +1752,8 @@ whiteMaxSpan.innerHTML = "White is up at most 1 points in material";
 whiteMaxSpan.style.position = "absolute";
 whiteMaxSpan.style.left = "25px";
 whiteMaxSpan.style.top = "152px";
-whiteMaxSpan.style.fontSize = "0.8em";
+whiteMaxSpan.style.fontShadow = "0px 0px 0px #555";
+whiteMaxSpan.style.fontSize = "12px";
 gameDiv.appendChild(whiteMaxSpan);
 
 var whiteBox = document.createElement("input");
@@ -1762,8 +1788,9 @@ var blackMaxSpan = document.createElement("span");
 blackMaxSpan.innerHTML = "Black is up at most 1 points in material";
 blackMaxSpan.style.position = "absolute";
 blackMaxSpan.style.left = "25px";
+blackMaxSpan.style.fontShadow = "0px 0px 0px #555";
 blackMaxSpan.style.top = "202px";
-blackMaxSpan.style.fontSize = "0.8em";
+blackMaxSpan.style.fontSize = "12px";
 gameDiv.appendChild(blackMaxSpan);
 
 var blackBox = document.createElement("input");
@@ -1791,7 +1818,9 @@ var infoDiv = document.createElement("div");
 infoDiv.setAttribute("width", "300px");
 infoDiv.style.position = "absolute";
 infoDiv.style.left = "620px";
-infoDiv.style.top = "10px";
+infoDiv.style.top = "510px";
+infoDiv.style.font = "18px Tacoma, Helvetica, Arial, sans-serif";
+infoDiv.style.textShadow = "0px 1px 2px #555";
 document.body.appendChild(infoDiv);
 
 var infoP = document.createElement("p");
