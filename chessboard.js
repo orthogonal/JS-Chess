@@ -1293,9 +1293,9 @@ for (var i = 1; i <= 8; i++){
 		row.appendChild(cell);
 		cell.style.borderWidth = "0px";
 		if ((i + j) % 2 == 0)
-			cell.style.backgroundColor = "rgb(200, 200, 200)";
-		else
 			cell.style.backgroundColor = "rgb(245, 245, 245)";
+		else
+			cell.style.backgroundColor = "rgb(200, 200, 200)";
 	}
 }
 board.style.position = "absolute";
