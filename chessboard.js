@@ -574,14 +574,14 @@ function Piece(color, type, obj, square){
 				}
 			}
 			if (this.color == Piece.WHITE && !wk.hasMoved){
-				if (!wr1.hasMoved && squares[5][0].piece == null && squares[6][0].piece == null)
+				if (!wr2.hasMoved && squares[5][0].piece == null && squares[6][0].piece == null)
 					this.available[6][0] = Piece.KINGSIDE_CASTLE;
-				if (!wr2.hasMoved && squares[3][0].piece == null && squares[2][0].piece == null && squares[1][0].piece == null)
+				if (!wr1.hasMoved && squares[3][0].piece == null && squares[2][0].piece == null && squares[1][0].piece == null)
 					this.available[2][0] = Piece.QUEENSIDE_CASTLE;
 			} else if (this.color == Piece.BLACK && !bk.hasMoved){
-				if (!br1.hasMoved && squares[5][7].piece == null && squares[6][7].piece == null)
+				if (!br2.hasMoved && squares[5][7].piece == null && squares[6][7].piece == null)
 					this.available[6][7] = Piece.KINGSIDE_CASTLE;
-				if (!br2.hasMoved && squares[3][7].piece == null && squares[2][7].piece == null && squares[1][0].piece == null)
+				if (!br1.hasMoved && squares[3][7].piece == null && squares[2][7].piece == null && squares[1][0].piece == null)
 					this.available[2][7] = Piece.QUEENSIDE_CASTLE;
 			}
 		}
